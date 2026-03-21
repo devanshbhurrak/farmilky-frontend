@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { FaShoppingCart } from "react-icons/fa";
 import { useGetAllProductsQuery } from "../features/api/productApi";
-import { useSelector } from "react-redux";
 import Product from "../components/Product";
 
 // Mock Product Data
@@ -37,9 +35,8 @@ import Product from "../components/Product";
 const OrderNowPage = () => {
   const [filter, setFilter] = useState("All"); 
 
-  const { data, isLoading, error } = useGetAllProductsQuery();
+  const { data, isLoading } = useGetAllProductsQuery();
   const products = data?.products || [];
-  const user = useSelector((state) => state.auth.user);
 
   // Filter products based on the selected category
   const filteredProducts = products.filter((product) => {

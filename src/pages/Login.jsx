@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { loginUser } from "../features/authSlice"; // Adjust path to your authSlice
+import { useNavigate } from "react-router-dom";
 import { HiMail, HiLockClosed, HiUser, HiPhone } from "react-icons/hi";
 import { useLoginUserMutation, useRegisterUserMutation } from "../features/api/authApi";
 import { useEffect } from "react";
@@ -37,7 +35,6 @@ const AuthPage = () => {
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -65,7 +62,7 @@ const AuthPage = () => {
     if(loginError) {
       toast.error(loginError?.data?.message || 'Login Failed')
     }
-  }, [registerSuccess, loginSuccess, registerData, loginData, registerError, loginError])
+  }, [registerSuccess, loginSuccess, registerData, loginData, registerError, loginError, navigate])
 
   return (
     <div className="min-h-screen bg-[#F9F5F0] flex items-center justify-center py-12 px-4">
