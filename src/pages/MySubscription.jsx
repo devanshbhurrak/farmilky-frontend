@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import EmptyState from "../components/EmptyState";
 import ErrorState from "../components/ErrorState";
@@ -8,7 +8,13 @@ import { useGetUserSubscriptionsQuery } from "../features/api/subscriptionApi";
 const MySubscriptions = () => {
   const { data, isLoading, error } = useGetUserSubscriptionsQuery();
 
-  const subscriptions = data?.subscription || [];
+  const subscriptions = useMemo(
+    () =>
+      [...(data?.subscription || [])].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      ),
+    [data?.subscription]
+  );
 
   if (isLoading) {
     return (

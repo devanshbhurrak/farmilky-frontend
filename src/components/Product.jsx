@@ -136,7 +136,7 @@ const Product = ({ product }) => {
 
         {isSubscriptionFriendly && (
           <Link
-            to={`/subscribe?productId=${product._id}`}
+            to={`/subscribe?productId=${product._id}&quantity=${Math.max(quantity, 1)}`}
             className="mt-3 flex min-h-11 items-center justify-center rounded-2xl border border-primary/15 px-5 py-2 font-semibold text-primary transition hover:bg-primary/5"
           >
             Subscribe Instead

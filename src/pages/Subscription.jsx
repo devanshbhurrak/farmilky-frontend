@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useGetProductByIdQuery } from "../features/api/productApi";
@@ -8,6 +8,10 @@ const Subscription = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const productId = searchParams.get("productId");
+  const initialQuantity = useMemo(() => {
+    const parsedQuantity = Number.parseInt(searchParams.get("quantity") || "1", 10);
+    return Number.isFinite(parsedQuantity) && parsedQuantity > 0 ? parsedQuantity : 1;
+  }, [searchParams]);
 
   const { data: product, isLoading } = useGetProductByIdQuery(productId, {
     skip: !productId,
@@ -16,7 +20,7 @@ const Subscription = () => {
   const [createSubscription, { isLoading: creating }] =
     useCreateSubscriptionMutation();
 
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(initialQuantity);
   const [schedule, setSchedule] = useState("daily");
   const estimatedDeliveries = schedule === "daily" ? 30 : 15;
   const estimatedMonthlyCost = product
@@ -29,7 +33,8 @@ const Subscription = () => {
     try {
       await createSubscription({
         productId,
-        quantityPerDay: quantity,
+        quantityPerDay: Number(quantity),
+        quantity: Number(quantity),
         deliverySchedule: schedule,
       }).unwrap();
 

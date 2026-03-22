@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { FaBoxOpen } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import EmptyState from "../components/EmptyState";
@@ -8,7 +8,13 @@ import { useGetUserOrdersQuery } from "../features/api/orderApi";
 
 const MyOrders = () => {
   const { data: orderData, isLoading, error } = useGetUserOrdersQuery();
-  const orders = orderData?.order || [];
+  const orders = useMemo(
+    () =>
+      [...(orderData?.order || [])].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      ),
+    [orderData?.order]
+  );
 
   if (isLoading) {
     return <Loader className="min-h-[60vh]" message="Loading your orders..." />;
