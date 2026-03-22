@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { cartApi } from "./cartApi";
 
 const ORDER_API = `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/order`;
 
@@ -20,6 +21,27 @@ export const orderApi = createApi({
         method: "POST",
         body: data, // { address, paymentMethod }
       }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+
+          dispatch(
+            cartApi.util.updateQueryData("getCart", undefined, (draft) => {
+              if (draft) {
+                draft.items = [];
+              }
+            })
+          );
+
+          if (data?.order?._id) {
+            dispatch(
+              orderApi.util.upsertQueryData("getOrderById", data.order._id, data)
+            );
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
       invalidatesTags: ["Orders"],
     }),
 

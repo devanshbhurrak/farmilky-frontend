@@ -27,6 +27,11 @@ export const subscriptionApi = createApi({
       providesTags: ["Subscription"],
     }),
 
+    getSubscriptionById: builder.query({
+      query: (id) => `/${id}`,
+      providesTags: ["Subscription"],
+    }),
+
     // PAUSE
     pauseSubscription: builder.mutation({
       query: (id) => ({
@@ -58,6 +63,7 @@ export const subscriptionApi = createApi({
 
 export const {
   useCreateSubscriptionMutation,
+  useGetSubscriptionByIdQuery,
   useGetUserSubscriptionsQuery,
   usePauseSubscriptionMutation,
   useResumeSubscriptionMutation,

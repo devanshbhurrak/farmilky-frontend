@@ -1,112 +1,140 @@
 import React from "react";
-import { useGetUserOrdersQuery } from "../features/api/orderApi";
+import { FaBoxOpen } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { FaBoxOpen, FaChevronRight } from "react-icons/fa";
+import EmptyState from "../components/EmptyState";
+import ErrorState from "../components/ErrorState";
+import Loader from "../components/Loader";
+import { useGetUserOrdersQuery } from "../features/api/orderApi";
 
 const MyOrders = () => {
   const { data: orderData, isLoading, error } = useGetUserOrdersQuery();
-
-  const orders = orderData?.order || []; // The backend returns { order: [...] }
+  const orders = orderData?.order || [];
 
   if (isLoading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <Loader className="min-h-[60vh]" message="Loading your orders..." />;
   }
 
   if (error) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center text-red-500">
-        <p className="text-xl font-semibold mb-2">Failed to load orders</p>
-        <p className="text-sm cursor-pointer underline" onClick={() => window.location.reload()}>Try Again</p>
-      </div>
+      <ErrorState
+        title="Failed to load orders"
+        message="We could not fetch your order history right now."
+        onAction={() => window.location.reload()}
+      />
     );
   }
 
   return (
-    <section className="bg-[#F9F5F0] min-h-screen py-10 px-4">
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-3xl font-bold text-primary mb-8 px-2">My Orders</h1>
+    <section className="page-shell">
+      <div className="app-shell max-w-5xl">
+        <h1 className="mb-8 px-2 text-3xl font-bold text-primary">My Orders</h1>
 
         {orders.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center shadow-sm">
-            <div className="flex justify-center mb-6">
-                <FaBoxOpen className="text-gray-300 text-6xl" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-700 mb-2">No orders yet</h2>
-            <p className="text-gray-500 mb-8">It looks like you haven't placed any orders yet.</p>
-            <Link
-              to="/order"
-              className="bg-secondary text-white px-8 py-3 rounded-xl font-semibold hover:bg-secondary/90 transition shadow-lg shadow-secondary/20"
-            >
-              Start Shopping
-            </Link>
-          </div>
+          <EmptyState
+            title="No orders yet"
+            message="It looks like you haven&apos;t placed any orders yet."
+            actionLabel="Start Shopping"
+            actionTo="/order"
+            icon={<FaBoxOpen className="text-6xl text-gray-300" />}
+            className="py-0"
+          />
         ) : (
           <div className="space-y-6">
             {orders.map((order) => (
-              <div key={order._id} className="bg-white rounded-2xl p-6 shadow-sm border border-transparent hover:border-gray-200 transition">
-                <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-4 pb-4 border-b border-gray-100">
-                    <div>
-                        <p className="text-sm text-gray-500 mb-1">Order ID: <span className="font-mono text-gray-700">{order._id}</span></p>
-                        <p className="text-sm text-gray-500">Placed on: {new Date(order.createdAt).toLocaleDateString()} at {new Date(order.createdAt).toLocaleTimeString()}</p>
-                        {order.orderStatus === 'delivered' ? (
-                            <p className="text-sm text-green-600 font-medium mt-1">Delivered on: {new Date(order.deliveredAt).toLocaleDateString()}</p>
-                        ) : order.orderStatus === 'cancelled' ? (
-                            <p className="text-sm text-red-500 font-medium mt-1">Cancelled on: {new Date(order.cancelledAt).toLocaleDateString()}</p>
-                        ) : (
-                            <p className="text-sm text-secondary font-medium mt-1">
-                                {(() => {
-                                    const today = new Date();
-                                    today.setHours(0, 0, 0, 0);
-                                    
-                                    const expected = new Date(order.createdAt);
-                                    expected.setDate(expected.getDate() + 1);
-                                    expected.setHours(0, 0, 0, 0);
+              <div
+                key={order._id}
+                className="surface-card rounded-2xl p-5 transition hover:border-gray-200 sm:p-6"
+              >
+                <div className="mb-4 flex flex-col gap-4 border-b border-gray-100 pb-4 md:flex-row md:items-center md:justify-between">
+                  <div className="min-w-0">
+                    <p className="mb-1 text-sm text-gray-500">
+                      Order ID:{" "}
+                      <span className="break-all font-mono text-gray-700">
+                        {order._id}
+                      </span>
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Placed on: {new Date(order.createdAt).toLocaleDateString()} at{" "}
+                      {new Date(order.createdAt).toLocaleTimeString()}
+                    </p>
+                    {order.orderStatus === "delivered" ? (
+                      <p className="mt-1 text-sm font-medium text-green-600">
+                        Delivered on: {new Date(order.deliveredAt).toLocaleDateString()}
+                      </p>
+                    ) : order.orderStatus === "cancelled" ? (
+                      <p className="mt-1 text-sm font-medium text-red-500">
+                        Cancelled on: {new Date(order.cancelledAt).toLocaleDateString()}
+                      </p>
+                    ) : (
+                      <p className="mt-1 text-sm font-medium text-secondary">
+                        {(() => {
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
 
-                                    return today >= expected 
-                                        ? "Arriving Today" 
-                                        : `Expected Delivery: ${expected.toLocaleDateString()}`;
-                                })()}
-                            </p>
-                        )}
-                    </div>
-                    <div>
-                        <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-semibold capitalize 
-                            ${order.orderStatus === 'delivered' ? 'bg-green-100 text-green-700' : 
-                              order.orderStatus === 'cancelled' ? 'bg-red-100 text-red-700' : 
-                              'bg-blue-50 text-blue-600'}`}>
-                            {order.orderStatus}
-                        </span>
-                    </div>
+                          const expected = new Date(order.createdAt);
+                          expected.setDate(expected.getDate() + 1);
+                          expected.setHours(0, 0, 0, 0);
+
+                          return today >= expected
+                            ? "Arriving Today"
+                            : `Expected Delivery: ${expected.toLocaleDateString()}`;
+                        })()}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <span
+                      className={`inline-block rounded-full px-4 py-1.5 text-sm font-semibold capitalize ${
+                        order.orderStatus === "delivered"
+                          ? "bg-green-100 text-green-700"
+                          : order.orderStatus === "cancelled"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-blue-50 text-blue-600"
+                      }`}
+                    >
+                      {order.orderStatus}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="space-y-4">
-                    {order.items.map((item) => (
-                        <div key={item._id} className="flex items-center gap-4">
-                            <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                                {/* Placeholder since order items might not popluate images fully or depending on backend */}
-                                <img src={item.image || "https://placehold.co/100"} alt={item.name} className="w-full h-full object-cover" />
-                            </div>
-                            <div className="flex-1">
-                                <h4 className="font-semibold text-gray-800 line-clamp-1">{item.name}</h4>
-                                <p className="text-sm text-gray-500">Qty: {item.quantity} × ₹{item.price}</p>
-                            </div>
-                            <div className="font-semibold text-gray-800">
-                                ₹{item.price * item.quantity}
-                            </div>
-                        </div>
-                    ))}
+                  {order.items.map((item) => (
+                    <div key={item._id} className="flex items-center gap-3 sm:gap-4">
+                      <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100 p-2 sm:h-16 sm:w-16">
+                        <img
+                          src={item.image || "https://placehold.co/100"}
+                          alt={item.name}
+                          className="h-full w-full object-contain"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="truncate font-semibold text-gray-800">
+                          {item.name}
+                        </h4>
+                        <p className="text-sm text-gray-500">
+                          Qty: {item.quantity} x Rs. {item.price}
+                        </p>
+                      </div>
+                      <div className="text-right font-semibold text-gray-800">
+                        Rs. {item.price * item.quantity}
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
-                <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
-                     <div>
-                        <p className="text-sm text-gray-500">Total Amount</p>
-                        <p className="text-xl font-bold text-primary">₹{order.totalAmount}</p>
-                     </div>
-                     {/* Could add a 'View Details' button here if we had a dedicated detail page */}
+                <div className="mt-6 flex flex-col gap-4 border-t border-gray-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm text-gray-500">Total Amount</p>
+                    <p className="text-xl font-bold text-primary">
+                      Rs. {order.totalAmount}
+                    </p>
+                  </div>
+                  <Link
+                    to={`/my-orders/${order._id}`}
+                    className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-primary/15 bg-primary/5 px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/10"
+                  >
+                    View Details
+                  </Link>
                 </div>
               </div>
             ))}

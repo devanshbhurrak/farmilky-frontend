@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { resetUserScopedApiState } from '../../app/resetUserScopedApiState';
 import { loginUser, logoutUser } from '../authSlice';
 
 const USER_API = `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/user/`;
@@ -19,6 +20,7 @@ export const authApi = createApi({
             async onQueryStarted(arg, {queryFulfilled, dispatch}) {
                 try {
                     const result = await queryFulfilled
+                    resetUserScopedApiState(dispatch)
                     dispatch(loginUser(result.data.user))
                 } catch (error) {
                     console.log(error)
@@ -34,6 +36,7 @@ export const authApi = createApi({
             async onQueryStarted(arg, {queryFulfilled, dispatch}) {
                 try {
                     const result = await queryFulfilled
+                    resetUserScopedApiState(dispatch)
                     dispatch(loginUser(result.data.user))
                 } catch (error) {
                     console.log(error)
@@ -48,6 +51,7 @@ export const authApi = createApi({
             async onQueryStarted(arg, {queryFulfilled, dispatch}) {
                 try {
                     await queryFulfilled;
+                    resetUserScopedApiState(dispatch)
                     dispatch(logoutUser())
                 } catch (error) {
                     console.log(error)

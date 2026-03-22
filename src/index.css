@@ -21,3 +21,117 @@
     border-radius: 20px;
   }
 }
+
+:root {
+  font-family: "Aptos", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #1f2937;
+  background: #f9f5f0;
+  --surface: #ffffff;
+  --surface-soft: #fdfbf8;
+  --surface-muted: #f4ede3;
+  --border-soft: #eadfce;
+  --text-muted: #6b7280;
+  --shadow-soft: 0 12px 30px rgba(56, 102, 65, 0.08);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  overflow-x: hidden;
+  background: #f9f5f0;
+  color: #1f2937;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(249, 122, 0, 0.2);
+}
+
+.app-shell {
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+.page-shell {
+  min-height: 100vh;
+  background: var(--color-background);
+  padding-block: 2.5rem;
+}
+
+.page-hero {
+  background: var(--color-background);
+  padding-block: 3.5rem;
+}
+
+.surface-card {
+  background: var(--surface);
+  border: 1px solid rgba(234, 223, 206, 0.8);
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.surface-panel {
+  background: var(--surface-soft);
+  border: 1px solid var(--border-soft);
+  border-radius: 1rem;
+}
+
+.page-kicker {
+  color: var(--color-secondary);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-title {
+  color: var(--color-primary);
+  font-size: clamp(2rem, 4vw, 3.75rem);
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+.page-copy {
+  max-width: 42rem;
+  color: #4b5563;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+@media (min-width: 640px) {
+  .app-shell {
+    padding-inline: 1.5rem;
+  }
+
+  .page-shell {
+    padding-block: 3rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .page-hero {
+    padding-block: 6rem;
+  }
+}

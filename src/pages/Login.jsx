@@ -1,160 +1,211 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { HiMail, HiLockClosed, HiUser, HiPhone } from "react-icons/hi";
-import { useLoginUserMutation, useRegisterUserMutation } from "../features/api/authApi";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { FaSpinner } from "react-icons/fa";
+import { FaArrowLeft, FaSpinner } from "react-icons/fa";
+import { HiLockClosed, HiMail, HiPhone, HiUser } from "react-icons/hi";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  useLoginUserMutation,
+  useRegisterUserMutation,
+} from "../features/api/authApi";
 
 const AuthInput = ({ icon, ...props }) => (
-  <div className="flex items-center gap-3 border border-gray-300 rounded-lg shadow-sm px-4 py-2 focus-within:ring-2 focus-within:ring-secondary">
+  <div className="flex items-center gap-3 rounded-xl border border-gray-300 px-4 py-3 shadow-sm transition focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20">
     <span className="text-gray-400">{icon}</span>
-    <input
-      {...props}
-      className="w-full h-full outline-none" 
-    />
+    <input {...props} className="h-full w-full outline-none" />
   </div>
 );
 
+const initialForm = {
+  name: "",
+  email: "",
+  password: "",
+  phone: "",
+};
+
 const AuthPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isLoginView = location.pathname !== "/signup";
+  const redirectTo = location.state?.from
+    ? `${location.state.from.pathname || ""}${location.state.from.search || ""}`
+    : "/";
 
   const [
     registerUser,
-    {data: registerData, error: registerError, isLoading: registerLoading, isSuccess: registerSuccess}
+    {
+      data: registerData,
+      error: registerError,
+      isLoading: registerLoading,
+      isSuccess: registerSuccess,
+    },
   ] = useRegisterUserMutation();
 
   const [
     loginUser,
-    {data: loginData, error: loginError, isLoading: loginLoading, isSuccess: loginSuccess}
+    {
+      data: loginData,
+      error: loginError,
+      isLoading: loginLoading,
+      isSuccess: loginSuccess,
+    },
   ] = useLoginUserMutation();
 
-  const [isLoginView, setIsLoginView] = useState(true);
+  const [form, setForm] = useState(initialForm);
+  const isSubmitting = loginLoading || registerLoading;
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
+  useEffect(() => {
+    setForm(initialForm);
+  }, [location.pathname]);
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (registerSuccess && registerData) {
+      toast.success(registerData.message || "Signup successful");
+      navigate(redirectTo, { replace: true });
+    }
+
+    if (registerError) {
+      toast.error(registerError?.data?.message || "Signup failed");
+    }
+
+    if (loginSuccess && loginData) {
+      toast.success(loginData.message || "Login successful");
+      navigate(redirectTo, { replace: true });
+    }
+
+    if (loginError) {
+      toast.error(loginError?.data?.message || "Login failed");
+    }
+  }, [
+    loginData,
+    loginError,
+    loginSuccess,
+    navigate,
+    redirectTo,
+    registerData,
+    registerError,
+    registerSuccess,
+  ]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if(isLoginView) {
-      loginUser({email, password})
-    } else {
-      registerUser({name, phone, email, password})
+
+    if (isLoginView) {
+      loginUser({ email: form.email, password: form.password });
+      return;
     }
+
+    registerUser({
+      name: form.name,
+      phone: form.phone,
+      email: form.email,
+      password: form.password,
+    });
   };
 
-  useEffect(() => {
-    if(registerSuccess && registerData) {
-      toast.success(registerData.message || 'Signup Successful')
-      navigate("/");
-    }
-    if(registerError) {
-      toast.error(registerError?.data?.message || 'Signup Failed')
-    }
-    if(loginSuccess && loginData ){
-      
-      toast.success(loginData.message || 'Login Successful')
-      navigate("/");
-    }
-    if(loginError) {
-      toast.error(loginError?.data?.message || 'Login Failed')
-    }
-  }, [registerSuccess, loginSuccess, registerData, loginData, registerError, loginError, navigate])
-
   return (
-    <div className="min-h-screen bg-[#F9F5F0] flex items-center justify-center py-12 px-4">
-      <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-lg space-y-6">
-        {/* Title */}
-        <h2 className="text-3xl font-bold text-center text-primary">
-          {isLoginView ? "Login to Your Account" : "Create Your Account"}
-        </h2>
+    <div className="page-shell flex items-center justify-center px-4">
+      <div className="surface-card w-full max-w-md space-y-5 p-6 sm:p-8">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition hover:text-primary"
+        >
+          <FaArrowLeft className="text-xs" />
+          Back to home
+        </Link>
 
-        {/* Form */}
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          {/* --- Sign Up Only Field --- */}
-          {!isLoginView && <>
-            <AuthInput
-              icon={<HiUser size={20} />}
-              id="name"
-              type="text"
-              placeholder="Full Name"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+        <div className="space-y-2 text-center">
+          <h2 className="text-3xl font-bold text-primary">
+            {isLoginView ? "Login to Your Account" : "Create Your Account"}
+          </h2>
+          <p className="text-sm text-gray-500">
+            {isLoginView
+              ? "Continue with your saved cart, subscriptions, and orders."
+              : "Create your Farmilky account to order faster and manage deliveries."}
+          </p>
+        </div>
 
-            <AuthInput
-              icon={<HiPhone size={20} />}
-              id="phone"
-              type="phone"
-              placeholder="Phone"
-              required
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-          </>}
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          {!isLoginView && (
+            <>
+              <AuthInput
+                icon={<HiUser size={20} />}
+                name="name"
+                type="text"
+                placeholder="Full Name"
+                autoComplete="name"
+                required
+                value={form.name}
+                onChange={handleChange}
+              />
 
-          {/* --- Common Fields --- */}
+              <AuthInput
+                icon={<HiPhone size={20} />}
+                name="phone"
+                type="tel"
+                placeholder="Phone"
+                autoComplete="tel"
+                inputMode="tel"
+                required
+                value={form.phone}
+                onChange={handleChange}
+              />
+            </>
+          )}
+
           <AuthInput
             icon={<HiMail size={20} />}
-            id="email"
+            name="email"
             type="email"
             placeholder="Email"
+            autoComplete="email"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={form.email}
+            onChange={handleChange}
           />
 
           <AuthInput
             icon={<HiLockClosed size={20} />}
-            id="password"
+            name="password"
             type="password"
             placeholder="Password"
+            autoComplete={isLoginView ? "current-password" : "new-password"}
             required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={form.password}
+            onChange={handleChange}
           />
 
-          {/* Forgot Password Link (Login only) */}
-          {/* {isLoginView && (
-            <div className="text-sm text-right">
-              <Link
-                to="/forgot-password" // You'll need to create this page later
-                className="font-medium text-primary hover:text-secondary"
-              >
-                Forgot your password?
-              </Link>
-            </div>
-          )} */}
-
-          {/* Submit Button */}
-          <div>
-            <button
-              type="submit"
-              className="w-full bg-secondary flex items-center justify-center text-white font-semibold px-8 py-3 rounded-2xl hover:bg-secondary/90 transition-colors duration-300"
-            >
-              { (loginLoading || registerLoading) ? (
-                <>
-                  <FaSpinner className="h-4 w-4 mr-2 animate-spin" />
-                  Please wait...
-                </>
-              ) : isLoginView ? "Login" : "Create Account"}
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="flex min-h-12 w-full items-center justify-center rounded-2xl bg-secondary px-8 py-3 font-semibold text-white transition-colors duration-300 hover:bg-secondary/90 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isSubmitting ? (
+              <>
+                <FaSpinner className="mr-2 h-4 w-4 animate-spin" />
+                Please wait...
+              </>
+            ) : isLoginView ? (
+              "Login"
+            ) : (
+              "Create Account"
+            )}
+          </button>
         </form>
 
-        {/* Toggle Link */}
-        <div className="text-sm text-center text-gray-600">
+        <div className="text-center text-sm text-gray-600">
           {isLoginView ? "Don't have an account?" : "Already have an account?"}{" "}
-          <button
-            onClick={() => setIsLoginView(!isLoginView)} // Toggle the view
-            className="font-medium text-primary hover:text-secondary focus:outline-none"
+          <Link
+            to={isLoginView ? "/signup" : "/login"}
+            state={location.state}
+            className="font-medium text-primary hover:text-secondary"
           >
             {isLoginView ? "Sign Up" : "Login"}
-          </button>
+          </Link>
         </div>
       </div>
     </div>
