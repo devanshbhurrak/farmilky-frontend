@@ -1,13 +1,18 @@
-import React from "react";
-import { FaArrowLeft, FaBoxOpen, FaMapMarkerAlt } from "react-icons/fa";
+import React, { useState } from "react";
+import { ArrowLeft, MapPin, Package, Truck, RotateCcw } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 import Loader from "../components/Loader";
 import { useGetOrderByIdQuery } from "../features/api/orderApi";
+import { useRequestReturnMutation } from "../features/api/returnApi";
 
 const OrderDetail = () => {
   const { id } = useParams();
   const { data, isLoading, error } = useGetOrderByIdQuery(id);
   const order = data?.order;
+  const [requestReturn, { isLoading: returningOrder }] = useRequestReturnMutation();
+  const [showReturnForm, setShowReturnForm] = useState(false);
+  const [returnReason, setReturnReason] = useState("");
 
   if (isLoading) {
     return (
@@ -56,17 +61,17 @@ const OrderDetail = () => {
           to="/my-orders"
           className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-primary"
         >
-          <FaArrowLeft className="text-xs" />
+          <ArrowLeft className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
           Back to My Orders
         </Link>
 
         <div className="surface-card p-6 sm:p-8">
-          <div className="flex flex-col gap-5 border-b border-gray-100 pb-6 md:flex-row md:items-start md:justify-between">
-            <div>
-              <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-secondary">
+          <div className="flex flex-row items-start justify-between gap-5 border-b border-gray-100 pb-6">
+            <div className="hidden md:block">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-secondary">
                 Order Details
               </p>
-              <h1 className="text-3xl font-bold text-primary">Order #{order._id.slice(-8).toUpperCase()}</h1>
+              <h1 className="text-2xl font-bold text-primary">Order #{order._id.slice(-8).toUpperCase()}</h1>
               <p className="mt-2 text-sm text-gray-500">
                 Placed on {new Date(order.createdAt).toLocaleDateString()} at{" "}
                 {new Date(order.createdAt).toLocaleTimeString()}
@@ -119,7 +124,7 @@ const OrderDetail = () => {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.7fr_1fr]">
           <div className="surface-card p-6 sm:p-8">
             <div className="mb-6 flex items-center gap-3">
-              <FaBoxOpen className="text-secondary" />
+              <Package className="h-6 w-6 shrink-0 text-secondary" strokeWidth={1.75} aria-hidden />
               <h2 className="text-2xl font-bold text-primary">Items in this order</h2>
             </div>
 
@@ -150,10 +155,52 @@ const OrderDetail = () => {
             </div>
           </div>
 
+          {order.deliveryAttempts?.length > 0 && (
+            <div className="surface-card p-6 sm:p-8">
+              <div className="mb-5 flex items-center gap-3">
+                <Truck className="h-6 w-6 shrink-0 text-secondary" strokeWidth={1.75} aria-hidden />
+                <h2 className="text-2xl font-bold text-primary">Delivery Activity</h2>
+              </div>
+              <ol className="space-y-3">
+                {order.deliveryAttempts.map((attempt, i) => (
+                  <li key={i} className="flex gap-4 rounded-2xl border border-gray-100 p-4">
+                    <span
+                      className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                        attempt.status === "delivered"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-600"
+                      }`}
+                    >
+                      {attempt.status === "delivered" ? "✓" : "✗"}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold capitalize text-gray-800">{attempt.status}</p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(attempt.attemptDate).toLocaleDateString(undefined, {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                      {attempt.reason && (
+                        <p className="mt-1 text-sm text-gray-600">Reason: {attempt.reason}</p>
+                      )}
+                      {attempt.notes && (
+                        <p className="mt-0.5 text-sm text-gray-500">{attempt.notes}</p>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+
           <aside className="space-y-6">
             <div className="surface-card p-6">
               <div className="mb-4 flex items-center gap-3">
-                <FaMapMarkerAlt className="text-secondary" />
+                <MapPin className="h-6 w-6 shrink-0 text-secondary" strokeWidth={1.75} aria-hidden />
                 <h2 className="text-xl font-bold text-primary">Delivery Address</h2>
               </div>
               <p className="leading-7 text-gray-700">
@@ -182,6 +229,70 @@ const OrderDetail = () => {
                 </div>
               </div>
             </div>
+
+            {order.orderStatus === "delivered" && (() => {
+              const deliveredAt = order.deliveredAt || order.updatedAt;
+              const withinWindow = deliveredAt
+                ? Date.now() - new Date(deliveredAt).getTime() < 24 * 60 * 60 * 1000
+                : false;
+              if (!withinWindow) return null;
+              return (
+                <div className="surface-card p-6">
+                  <div className="mb-3 flex items-center gap-3">
+                    <RotateCcw className="h-5 w-5 shrink-0 text-secondary" strokeWidth={1.75} aria-hidden />
+                    <h2 className="text-xl font-bold text-primary">Request Return</h2>
+                  </div>
+                  {!showReturnForm ? (
+                    <>
+                      <p className="mb-3 text-sm text-gray-500">
+                        Issue with your order? Request a return within 24 hours of delivery.
+                      </p>
+                      <button
+                        onClick={() => setShowReturnForm(true)}
+                        className="w-full rounded-xl border border-secondary py-2.5 text-sm font-semibold text-secondary transition hover:bg-secondary hover:text-white"
+                      >
+                        Request Return
+                      </button>
+                    </>
+                  ) : (
+                    <div className="space-y-3">
+                      <textarea
+                        value={returnReason}
+                        onChange={(e) => setReturnReason(e.target.value)}
+                        rows={3}
+                        placeholder="Describe the issue (e.g., damaged product, wrong item)..."
+                        className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-800 transition focus:border-secondary focus:outline-none"
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={async () => {
+                            if (!returnReason.trim()) { toast.error("Please describe the issue."); return; }
+                            try {
+                              await requestReturn({ orderId: order._id, reason: returnReason.trim() }).unwrap();
+                              toast.success("Return request submitted.");
+                              setShowReturnForm(false);
+                              setReturnReason("");
+                            } catch (err) {
+                              toast.error(err?.data?.message || "Failed to submit return request.");
+                            }
+                          }}
+                          disabled={returningOrder}
+                          className="flex-1 rounded-xl bg-secondary py-2.5 text-sm font-semibold text-white disabled:opacity-70"
+                        >
+                          {returningOrder ? "Submitting..." : "Submit"}
+                        </button>
+                        <button
+                          onClick={() => { setShowReturnForm(false); setReturnReason(""); }}
+                          className="rounded-xl border border-gray-300 px-4 py-2.5 text-sm font-semibold text-gray-600"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </aside>
         </div>
       </div>

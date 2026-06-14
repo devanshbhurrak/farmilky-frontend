@@ -51,10 +51,10 @@ const MySubscriptions = () => {
   return (
       <section className="page-shell">
       <div className="app-shell">
-        <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-4xl font-bold text-primary">My Subscriptions</h1>
-            <p className="mt-2 text-gray-600">Manage your daily deliveries</p>
+        <div className="mb-4 flex flex-row items-center justify-end gap-3 md:mb-6 md:justify-between">
+          <div className="hidden md:block">
+            <h1 className="text-2xl font-bold text-primary">My Subscriptions</h1>
+            <p className="mt-1 text-sm text-gray-500">Manage your daily deliveries</p>
           </div>
           <Link to="/order" className="font-semibold text-secondary hover:underline">
             + Add New Subscription

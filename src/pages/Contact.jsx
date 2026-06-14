@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  FaEnvelope,
-  FaMapMarkerAlt,
-  FaPhone,
-  FaWhatsapp,
-} from "react-icons/fa";
+import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -54,7 +49,7 @@ const ContactPage = () => {
 
             <div className="flex items-start gap-4">
               <div className="rounded-full bg-secondary/10 p-3 text-secondary">
-                <FaEnvelope size={24} />
+                <Mail className="h-6 w-6" strokeWidth={1.75} aria-hidden />
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-primary">Email Us</h3>
@@ -70,7 +65,7 @@ const ContactPage = () => {
 
             <div className="flex items-start gap-4">
               <div className="rounded-full bg-secondary/10 p-3 text-secondary">
-                <FaPhone size={24} />
+                <Phone className="h-6 w-6" strokeWidth={1.75} aria-hidden />
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-primary">Call Us</h3>
@@ -86,7 +81,7 @@ const ContactPage = () => {
 
             <div className="flex items-start gap-4">
               <div className="rounded-full bg-secondary/10 p-3 text-secondary">
-                <FaWhatsapp size={24} />
+                <MessageCircle className="h-6 w-6" strokeWidth={1.75} aria-hidden />
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-primary">WhatsApp Us</h3>
@@ -104,7 +99,7 @@ const ContactPage = () => {
 
             <div className="flex items-start gap-4">
               <div className="rounded-full bg-secondary/10 p-3 text-secondary">
-                <FaMapMarkerAlt size={24} />
+                <MapPin className="h-6 w-6" strokeWidth={1.75} aria-hidden />
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-primary">Our Farm</h3>

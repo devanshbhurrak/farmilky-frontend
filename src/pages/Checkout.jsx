@@ -153,10 +153,10 @@ const Checkout = () => {
       <section className="page-shell">
         <div className="app-shell">
           <div className="surface-card mx-auto flex min-h-[50vh] max-w-xl flex-col items-center justify-center px-6 py-10 text-center sm:px-10">
-            <h1 className="text-3xl font-bold text-primary sm:text-4xl">
+            <h1 className="hidden text-2xl font-bold text-primary md:block md:text-3xl">
               Login to continue
             </h1>
-            <p className="mt-3 text-lg text-gray-600">
+            <p className="mt-3 hidden text-lg text-gray-600 md:block">
               Sign in to confirm your delivery details and place the order.
             </p>
             <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">

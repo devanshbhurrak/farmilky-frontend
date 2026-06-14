@@ -5,7 +5,9 @@ import { productApi } from "../features/api/productApi";
 import { cartApi } from "../features/api/cartApi";
 import { orderApi } from "../features/api/orderApi";
 import { subscriptionApi } from "../features/api/subscriptionApi";
-import { invoiceApi } from "../features/api/invoiceApi";
+import { passbookApi } from "../features/api/passbookApi";
+import { complaintApi } from "../features/api/complaintApi";
+import { returnApi } from "../features/api/returnApi";
 
 export const store = configureStore({
     reducer: {
@@ -15,7 +17,9 @@ export const store = configureStore({
         [cartApi.reducerPath]: cartApi.reducer,
         [orderApi.reducerPath]: orderApi.reducer,
         [subscriptionApi.reducerPath]: subscriptionApi.reducer,
-        [invoiceApi.reducerPath]: invoiceApi.reducer,
+        [passbookApi.reducerPath]: passbookApi.reducer,
+        [complaintApi.reducerPath]: complaintApi.reducer,
+        [returnApi.reducerPath]: returnApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware()
@@ -24,5 +28,7 @@ export const store = configureStore({
             .concat(cartApi.middleware)
             .concat(orderApi.middleware)
             .concat(subscriptionApi.middleware)
-            .concat(invoiceApi.middleware),
+            .concat(passbookApi.middleware)
+            .concat(complaintApi.middleware)
+            .concat(returnApi.middleware),
 })

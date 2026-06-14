@@ -27,7 +27,7 @@ const Cart = () => {
       <section className="page-shell">
         <div className="app-shell">
           <div className="surface-card mx-auto flex min-h-[50vh] max-w-xl flex-col items-center justify-center px-6 py-10 text-center sm:px-10">
-            <h1 className="text-3xl font-bold text-primary sm:text-4xl">
+            <h1 className="hidden text-2xl font-bold text-primary md:block md:text-3xl">
               Your cart is waiting
             </h1>
             <p className="mt-3 text-lg text-gray-600">
@@ -108,7 +108,7 @@ const Cart = () => {
   return (
     <section className="page-shell">
       <div className="app-shell">
-        <h1 className="mb-8 text-3xl font-bold text-primary sm:mb-10 sm:text-4xl">
+        <h1 className="mb-6 hidden text-2xl font-bold text-primary sm:mb-8 md:block md:text-3xl">
           Shopping Cart
         </h1>
 

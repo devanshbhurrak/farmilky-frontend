@@ -1,7 +1,5 @@
 import React from "react";
-import { BsFillPersonCheckFill } from "react-icons/bs";
-import { FaCheckCircle, FaSeedling, FaTruck } from "react-icons/fa";
-import { GiFarmer } from "react-icons/gi";
+import { CircleCheck, Sprout, Tractor, Truck, UserCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function WhyFarmilkyPage() {
@@ -31,7 +29,7 @@ export default function WhyFarmilkyPage() {
               />
             </div>
             <div className="space-y-4">
-              <FaSeedling size={40} className="text-secondary" />
+              <Sprout className="h-10 w-10 text-secondary" strokeWidth={1.5} aria-hidden />
               <h2 className="text-3xl font-bold text-primary">
                 Absolutely Pure and Natural
               </h2>
@@ -41,13 +39,13 @@ export default function WhyFarmilkyPage() {
               </p>
               <ul className="space-y-2 pt-2">
                 <li className="flex items-center gap-2 text-gray-700">
-                  <FaCheckCircle className="text-secondary" /> No preservatives
+                  <CircleCheck className="h-5 w-5 shrink-0 text-secondary" strokeWidth={1.75} aria-hidden /> No preservatives
                 </li>
                 <li className="flex items-center gap-2 text-gray-700">
-                  <FaCheckCircle className="text-secondary" /> Antibiotic-free
+                  <CircleCheck className="h-5 w-5 shrink-0 text-secondary" strokeWidth={1.75} aria-hidden /> Antibiotic-free
                 </li>
                 <li className="flex items-center gap-2 text-gray-700">
-                  <FaCheckCircle className="text-secondary" /> Daily quality checks
+                  <CircleCheck className="h-5 w-5 shrink-0 text-secondary" strokeWidth={1.75} aria-hidden /> Daily quality checks
                 </li>
               </ul>
             </div>
@@ -55,7 +53,7 @@ export default function WhyFarmilkyPage() {
 
           <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12">
             <div className="space-y-4 md:order-last">
-              <GiFarmer size={40} className="text-secondary" />
+              <Tractor className="h-10 w-10 text-secondary" strokeWidth={1.5} aria-hidden />
               <h2 className="text-3xl font-bold text-primary">
                 Ethically and Sustainably Sourced
               </h2>
@@ -65,13 +63,13 @@ export default function WhyFarmilkyPage() {
               </p>
               <ul className="space-y-2 pt-2">
                 <li className="flex items-center gap-2 text-gray-700">
-                  <FaCheckCircle className="text-secondary" /> Support local farmers
+                  <CircleCheck className="h-5 w-5 shrink-0 text-secondary" strokeWidth={1.75} aria-hidden /> Support local farmers
                 </li>
                 <li className="flex items-center gap-2 text-gray-700">
-                  <FaCheckCircle className="text-secondary" /> Happy, grass-fed cows
+                  <CircleCheck className="h-5 w-5 shrink-0 text-secondary" strokeWidth={1.75} aria-hidden /> Happy, grass-fed cows
                 </li>
                 <li className="flex items-center gap-2 text-gray-700">
-                  <FaCheckCircle className="text-secondary" /> Sustainable farming practices
+                  <CircleCheck className="h-5 w-5 shrink-0 text-secondary" strokeWidth={1.75} aria-hidden /> Sustainable farming practices
                 </li>
               </ul>
             </div>
@@ -99,9 +97,10 @@ export default function WhyFarmilkyPage() {
 
           <div className="grid grid-cols-1 gap-6 text-center md:grid-cols-3 md:gap-8">
             <div className="rounded-xl bg-white p-6 shadow-lg">
-              <BsFillPersonCheckFill
-                size={50}
-                className="mx-auto mb-4 text-secondary"
+              <UserCheck
+                className="mx-auto mb-4 h-12 w-12 text-secondary"
+                strokeWidth={1.5}
+                aria-hidden
               />
               <h3 className="mb-2 text-xl font-bold text-primary">
                 1. You Place an Order
@@ -113,7 +112,7 @@ export default function WhyFarmilkyPage() {
             </div>
 
             <div className="rounded-xl bg-white p-6 shadow-lg">
-              <GiFarmer size={50} className="mx-auto mb-4 text-secondary" />
+              <Tractor className="mx-auto mb-4 h-12 w-12 text-secondary" strokeWidth={1.5} aria-hidden />
               <h3 className="mb-2 text-xl font-bold text-primary">
                 2. We Source and Pack
               </h3>
@@ -123,7 +122,7 @@ export default function WhyFarmilkyPage() {
             </div>
 
             <div className="rounded-xl bg-white p-6 shadow-lg">
-              <FaTruck size={50} className="mx-auto mb-4 text-secondary" />
+              <Truck className="mx-auto mb-4 h-12 w-12 text-secondary" strokeWidth={1.5} aria-hidden />
               <h3 className="mb-2 text-xl font-bold text-primary">
                 3. We Deliver Fresh
               </h3>

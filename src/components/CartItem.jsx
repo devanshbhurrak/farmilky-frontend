@@ -1,5 +1,5 @@
 import React from "react";
-import { FaTrash } from "react-icons/fa";
+import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const CartItem = ({ item, onQuantityChange, onRemove }) => {
@@ -62,7 +62,7 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
                 onClick={() => onRemove(product._id)}
                 className="flex items-center gap-2 text-sm text-gray-500 transition hover:text-red-500"
               >
-                <FaTrash className="text-xs" />
+                <Trash2 className="h-4 w-4" strokeWidth={1.75} aria-hidden />
                 Remove
               </button>
             </div>

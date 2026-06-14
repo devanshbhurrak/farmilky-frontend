@@ -77,12 +77,12 @@ textarea {
 .page-shell {
   min-height: 100vh;
   background: var(--color-background);
-  padding-block: 2.5rem;
+  padding-block: 1.5rem;
 }
 
 .page-hero {
   background: var(--color-background);
-  padding-block: 3.5rem;
+  padding-block: 2rem;
 }
 
 .surface-card {
@@ -108,9 +108,9 @@ textarea {
 
 .page-title {
   color: var(--color-primary);
-  font-size: clamp(2rem, 4vw, 3.75rem);
+  font-size: clamp(1.75rem, 3.5vw, 3.25rem);
   font-weight: 800;
-  line-height: 1.05;
+  line-height: 1.1;
 }
 
 .page-copy {
@@ -126,12 +126,18 @@ textarea {
   }
 
   .page-shell {
-    padding-block: 3rem;
+    padding-block: 2rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .page-hero {
+    display: none;
   }
 }
 
 @media (min-width: 768px) {
   .page-hero {
-    padding-block: 6rem;
+    padding-block: 3rem;
   }
 }

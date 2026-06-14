@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { HiMenu, HiShoppingCart, HiX } from "react-icons/hi";
+import { Menu, X } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useLogoutUserMutation } from "../features/api/authApi";
@@ -85,6 +85,12 @@ const Navbar = () => {
                 <div className="absolute right-0 top-full pt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                   <div className="bg-white text-gray-800 rounded-2xl shadow-xl border border-gray-100 overflow-hidden flex flex-col py-2">
                     <Link
+                      to="/profile"
+                      className="px-4 py-2 hover:bg-gray-50 hover:text-secondary text-left transition-colors"
+                    >
+                      My Profile
+                    </Link>
+                    <Link
                       to="/my-orders"
                       className="px-4 py-2 hover:bg-gray-50 hover:text-secondary text-left transition-colors"
                     >
@@ -95,6 +101,18 @@ const Navbar = () => {
                       className="px-4 py-2 hover:bg-gray-50 hover:text-secondary text-left transition-colors"
                     >
                       My Subscriptions
+                    </Link>
+                    <Link
+                      to="/passbook"
+                      className="px-4 py-2 hover:bg-gray-50 hover:text-secondary text-left transition-colors"
+                    >
+                      My Passbook
+                    </Link>
+                    <Link
+                      to="/my-complaints"
+                      className="px-4 py-2 hover:bg-gray-50 hover:text-secondary text-left transition-colors"
+                    >
+                      My Complaints
                     </Link>
                     <button
                       onClick={() => logoutUser()}
@@ -110,12 +128,16 @@ const Navbar = () => {
             <CartBadge />
 
             <button
-              className="md:hidden inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/10 p-2 text-3xl"
+              className="md:hidden inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/10 p-2 text-current"
               onClick={() => setMenuOpen(!menuOpen)}
               aria-label="Toggle menu"
               aria-expanded={menuOpen}
             >
-              {menuOpen ? <HiX /> : <HiMenu />}
+              {menuOpen ? (
+                <X className="h-7 w-7" strokeWidth={1.75} aria-hidden />
+              ) : (
+                <Menu className="h-7 w-7" strokeWidth={1.75} aria-hidden />
+              )}
             </button>
           </div>
         </div>
@@ -156,6 +178,14 @@ const Navbar = () => {
                   </li>
                   <li>
                     <Link
+                      to="/profile"
+                      className="block rounded-2xl px-4 py-3 hover:bg-white/8 transition-colors"
+                    >
+                      My Profile
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
                       to="/my-orders"
                       className="block rounded-2xl px-4 py-3 hover:bg-white/8 transition-colors"
                     >
@@ -168,6 +198,22 @@ const Navbar = () => {
                       className="block rounded-2xl px-4 py-3 hover:bg-white/8 transition-colors"
                     >
                       My Subscriptions
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/passbook"
+                      className="block rounded-2xl px-4 py-3 hover:bg-white/8 transition-colors"
+                    >
+                      My Passbook
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/my-complaints"
+                      className="block rounded-2xl px-4 py-3 hover:bg-white/8 transition-colors"
+                    >
+                      My Complaints
                     </Link>
                   </li>
                   <li>

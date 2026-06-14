@@ -1,6 +1,6 @@
 import React from "react";
 import toast from "react-hot-toast";
-import { FaCheckCircle } from "react-icons/fa";
+import { CircleCheck } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ErrorState from "../components/ErrorState";
 import Loader from "../components/Loader";
@@ -70,10 +70,10 @@ const OrderSuccess = () => {
     <section className="flex min-h-[80vh] items-center justify-center bg-background py-16">
       <div className="surface-card mx-4 w-full max-w-md p-8 text-center">
         <div className="mb-6 flex justify-center">
-          <FaCheckCircle className="text-6xl text-green-500" />
+          <CircleCheck className="mx-auto h-16 w-16 text-green-500" strokeWidth={1.5} aria-hidden />
         </div>
 
-        <h1 className="mb-2 text-3xl font-bold text-primary">Order Placed!</h1>
+        <h1 className="mb-2 hidden text-2xl font-bold text-primary md:block">Order Placed!</h1>
         <p className="mb-8 text-gray-600">
           Thank you for your order. We&apos;ll start processing it right away.
         </p>

@@ -16,6 +16,10 @@ import OrderSuccess from './pages/OrderSuccess'
 import MyOrders from './pages/MyOrders'
 import OrderDetail from './pages/OrderDetail'
 import SubscriptionDetail from './pages/SubscriptionDetail'
+import Profile from './pages/Profile'
+import MyComplaints from './pages/MyComplaints'
+import RaiseComplaint from './pages/RaiseComplaint'
+import Passbook from './pages/Passbook'
 
 
 const App = () => {
@@ -42,6 +46,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <MySubscriptions />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/passbook"
+          element={
+            <ProtectedRoute>
+              <Passbook />
             </ProtectedRoute>
           }
         />
@@ -82,6 +94,30 @@ const App = () => {
           element={
             <ProtectedRoute>
               <SubscriptionDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-complaints"
+          element={
+            <ProtectedRoute>
+              <MyComplaints />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/raise-complaint"
+          element={
+            <ProtectedRoute>
+              <RaiseComplaint />
             </ProtectedRoute>
           }
         />

@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  FaFacebook,
-  FaTwitter,
-  FaInstagram,
-  FaLinkedin,
-} from "react-icons/fa";
+import { Mail, MessageCircle, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -15,11 +10,10 @@ const Footer = () => {
     { label: "Order Now", to: "/order" },
   ];
 
-  const socialLinks = [
-    { label: "Facebook", href: "mailto:shyambhurrak@gmail.com", icon: <FaFacebook /> },
-    { label: "Twitter", href: "tel:+919424547907", icon: <FaTwitter /> },
-    { label: "Instagram", href: "https://wa.me/919424547907", icon: <FaInstagram /> },
-    { label: "LinkedIn", href: "mailto:shyambhurrak@gmail.com", icon: <FaLinkedin /> },
+  const contactLinks = [
+    { label: "Email", href: "mailto:shyambhurrak@gmail.com", icon: Mail },
+    { label: "Phone", href: "tel:+919424547907", icon: Phone },
+    { label: "WhatsApp", href: "https://wa.me/919424547907", icon: MessageCircle },
   ];
 
   return (
@@ -79,20 +73,23 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="font-bold text-lg mb-4">Follow Us</h3>
-            <div className="flex flex-wrap gap-4">
-              {socialLinks.map((link) => (
+            <h3 className="font-bold text-lg mb-4">Connect</h3>
+            <div className="flex flex-wrap gap-3">
+              {contactLinks.map((link) => {
+                const IconComponent = link.icon;
+                return (
                 <a
                   key={link.label}
                   href={link.href}
                   aria-label={link.label}
-                  className="text-2xl hover:text-secondary transition-colors"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/5 text-[#F9F5F0] transition-colors hover:border-secondary/60 hover:bg-white/10 hover:text-secondary"
                   target={link.href.startsWith("http") ? "_blank" : undefined}
                   rel={link.href.startsWith("http") ? "noreferrer" : undefined}
                 >
-                  {link.icon}
+                  <IconComponent className="h-5 w-5" strokeWidth={1.75} aria-hidden />
                 </a>
-              ))}
+              );
+              })}
             </div>
           </div>
         </div>

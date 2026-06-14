@@ -1,46 +1,42 @@
 import React from "react";
-import {
-  FaAward,
-  FaHeart,
-  FaLeaf,
-  FaRecycle,
-  FaShippingFast,
-  FaTint,
-} from "react-icons/fa";
+import { Award, Droplets, Heart, Leaf, Recycle, Truck } from "lucide-react";
+
+const iconClass = "h-10 w-10 text-secondary";
+const iconStroke = 1.5;
 
 const featuresData = [
   {
-    icon: <FaLeaf size={40} className="text-secondary" />,
+    icon: <Leaf className={iconClass} strokeWidth={iconStroke} aria-hidden />,
     title: "Pure & Natural",
     description:
       "No preservatives, no additives. Just 100% pure milk from healthy, happy cows.",
   },
   {
-    icon: <FaShippingFast size={40} className="text-secondary" />,
+    icon: <Truck className={iconClass} strokeWidth={iconStroke} aria-hidden />,
     title: "Reliable Doorstep Delivery",
     description:
       "Wake up to fresh milk on your doorstep every morning. Simple, convenient, and always on time.",
   },
   {
-    icon: <FaAward size={40} className="text-secondary" />,
+    icon: <Award className={iconClass} strokeWidth={iconStroke} aria-hidden />,
     title: "Ethically Sourced",
     description:
       "We partner with local farms that prioritize animal welfare and sustainable practices.",
   },
   {
-    icon: <FaRecycle size={40} className="text-secondary" />,
+    icon: <Recycle className={iconClass} strokeWidth={iconStroke} aria-hidden />,
     title: "Eco-Friendly Packaging",
     description:
       "Our packaging is recyclable and eco-conscious because purity should never harm the planet.",
   },
   {
-    icon: <FaTint size={40} className="text-secondary" />,
+    icon: <Droplets className={iconClass} strokeWidth={iconStroke} aria-hidden />,
     title: "Rich in Nutrition",
     description:
       "Loaded with calcium and essential nutrients, ensuring your family's health in every drop.",
   },
   {
-    icon: <FaHeart size={40} className="text-secondary" />,
+    icon: <Heart className={iconClass} strokeWidth={iconStroke} aria-hidden />,
     title: "Loved by Families",
     description:
       "Trusted by hundreds of families for our quality, freshness, and honest commitment to goodness.",

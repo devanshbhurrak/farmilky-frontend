@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { FaBoxOpen } from "react-icons/fa";
+import { PackageOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 import EmptyState from "../components/EmptyState";
 import ErrorState from "../components/ErrorState";
@@ -33,7 +33,7 @@ const MyOrders = () => {
   return (
     <section className="page-shell">
       <div className="app-shell max-w-5xl">
-        <h1 className="mb-8 px-2 text-3xl font-bold text-primary">My Orders</h1>
+        <h1 className="mb-5 hidden px-2 text-2xl font-bold text-primary md:block">My Orders</h1>
 
         {orders.length === 0 ? (
           <EmptyState
@@ -41,7 +41,7 @@ const MyOrders = () => {
             message="It looks like you haven&apos;t placed any orders yet."
             actionLabel="Start Shopping"
             actionTo="/order"
-            icon={<FaBoxOpen className="text-6xl text-gray-300" />}
+            icon={<PackageOpen className="mx-auto h-16 w-16 text-gray-300" strokeWidth={1.25} aria-hidden />}
             className="py-0"
           />
         ) : (

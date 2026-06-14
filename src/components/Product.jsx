@@ -1,5 +1,5 @@
 import React from "react";
-import { FaShoppingCart } from "react-icons/fa";
+import { ShoppingCart } from "lucide-react";
 import toast from "react-hot-toast";
 import {
   useAddToCartMutation,
@@ -108,7 +108,7 @@ const Product = ({ product }) => {
               onClick={handleAdd}
               className="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-secondary px-6 py-3 font-semibold text-white transition hover:bg-secondary/90 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              <FaShoppingCart />
+              <ShoppingCart className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
               Add to Cart
             </button>
           ) : (

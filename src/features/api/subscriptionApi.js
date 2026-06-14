@@ -6,22 +6,16 @@ export const subscriptionApi = createApi({
   reducerPath: "subscriptionApi",
   baseQuery: fetchBaseQuery({
     baseUrl: SUBSCRIPTION_API,
-    credentials: "include", // cookie-based auth
+    credentials: "include",
   }),
   tagTypes: ["Subscription"],
 
   endpoints: (builder) => ({
-    // CREATE SUBSCRIPTION
     createSubscription: builder.mutation({
-      query: (data) => ({
-        url: "/",
-        method: "POST",
-        body: data,
-      }),
+      query: (data) => ({ url: "/", method: "POST", body: data }),
       invalidatesTags: ["Subscription"],
     }),
 
-    // GET USER SUBSCRIPTIONS
     getUserSubscriptions: builder.query({
       query: () => "/",
       providesTags: ["Subscription"],
@@ -32,30 +26,57 @@ export const subscriptionApi = createApi({
       providesTags: ["Subscription"],
     }),
 
-    // PAUSE
     pauseSubscription: builder.mutation({
-      query: (id) => ({
-        url: `/${id}/pause`,
-        method: "PUT",
-      }),
+      query: (id) => ({ url: `/${id}/pause`, method: "PUT" }),
       invalidatesTags: ["Subscription"],
     }),
 
-    // RESUME
     resumeSubscription: builder.mutation({
-      query: (id) => ({
-        url: `/${id}/resume`,
+      query: (id) => ({ url: `/${id}/resume`, method: "PUT" }),
+      invalidatesTags: ["Subscription"],
+    }),
+
+    cancelSubscription: builder.mutation({
+      query: (id) => ({ url: `/${id}/cancel`, method: "PUT" }),
+      invalidatesTags: ["Subscription"],
+    }),
+
+    updateSubscription: builder.mutation({
+      query: ({ id, ...data }) => ({ url: `/${id}`, method: "PUT", body: data }),
+      invalidatesTags: ["Subscription"],
+    }),
+
+    scheduleQuantityChange: builder.mutation({
+      query: ({ id, ...data }) => ({ url: `/${id}/schedule-change`, method: "PUT", body: data }),
+      invalidatesTags: ["Subscription"],
+    }),
+
+    cancelScheduledChange: builder.mutation({
+      query: (id) => ({ url: `/${id}/schedule-change`, method: "DELETE" }),
+      invalidatesTags: ["Subscription"],
+    }),
+
+    scheduleVacation: builder.mutation({
+      query: ({ id, pauseFrom, pauseUntil }) => ({
+        url: `/${id}/vacation`,
         method: "PUT",
+        body: { pauseFrom, pauseUntil },
       }),
       invalidatesTags: ["Subscription"],
     }),
 
-    // CANCEL
-    cancelSubscription: builder.mutation({
-      query: (id) => ({
-        url: `/${id}/cancel`,
-        method: "PUT",
-      }),
+    cancelVacation: builder.mutation({
+      query: (id) => ({ url: `/${id}/vacation`, method: "DELETE" }),
+      invalidatesTags: ["Subscription"],
+    }),
+
+    skipDeliveryDate: builder.mutation({
+      query: ({ id, date }) => ({ url: `/${id}/skip`, method: "PUT", body: { date } }),
+      invalidatesTags: ["Subscription"],
+    }),
+
+    unskipDeliveryDate: builder.mutation({
+      query: ({ id, date }) => ({ url: `/${id}/unskip`, method: "PUT", body: { date } }),
       invalidatesTags: ["Subscription"],
     }),
   }),
@@ -68,4 +89,11 @@ export const {
   usePauseSubscriptionMutation,
   useResumeSubscriptionMutation,
   useCancelSubscriptionMutation,
+  useUpdateSubscriptionMutation,
+  useScheduleQuantityChangeMutation,
+  useCancelScheduledChangeMutation,
+  useScheduleVacationMutation,
+  useCancelVacationMutation,
+  useSkipDeliveryDateMutation,
+  useUnskipDeliveryDateMutation,
 } = subscriptionApi;

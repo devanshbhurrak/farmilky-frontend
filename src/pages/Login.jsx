@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { FaArrowLeft, FaSpinner } from "react-icons/fa";
-import { HiLockClosed, HiMail, HiPhone, HiUser } from "react-icons/hi";
+import { ArrowLeft, Loader2, Lock, Mail, Phone, User } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   useLoginUserMutation,
@@ -114,7 +113,7 @@ const AuthPage = () => {
           to="/"
           className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition hover:text-primary"
         >
-          <FaArrowLeft className="text-xs" />
+          <ArrowLeft className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
           Back to home
         </Link>
 
@@ -133,7 +132,7 @@ const AuthPage = () => {
           {!isLoginView && (
             <>
               <AuthInput
-                icon={<HiUser size={20} />}
+                icon={<User className="h-5 w-5" strokeWidth={1.75} aria-hidden />}
                 name="name"
                 type="text"
                 placeholder="Full Name"
@@ -144,7 +143,7 @@ const AuthPage = () => {
               />
 
               <AuthInput
-                icon={<HiPhone size={20} />}
+                icon={<Phone className="h-5 w-5" strokeWidth={1.75} aria-hidden />}
                 name="phone"
                 type="tel"
                 placeholder="Phone"
@@ -158,7 +157,7 @@ const AuthPage = () => {
           )}
 
           <AuthInput
-            icon={<HiMail size={20} />}
+            icon={<Mail className="h-5 w-5" strokeWidth={1.75} aria-hidden />}
             name="email"
             type="email"
             placeholder="Email"
@@ -169,7 +168,7 @@ const AuthPage = () => {
           />
 
           <AuthInput
-            icon={<HiLockClosed size={20} />}
+            icon={<Lock className="h-5 w-5" strokeWidth={1.75} aria-hidden />}
             name="password"
             type="password"
             placeholder="Password"
@@ -186,7 +185,7 @@ const AuthPage = () => {
           >
             {isSubmitting ? (
               <>
-                <FaSpinner className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin" strokeWidth={2} aria-hidden />
                 Please wait...
               </>
             ) : isLoginView ? (

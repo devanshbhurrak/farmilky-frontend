@@ -1,4 +1,4 @@
-import { FaShoppingCart } from "react-icons/fa";
+import { ShoppingCart } from "lucide-react";
 import { useGetCartQuery } from "../features/api/cartApi";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -15,7 +15,7 @@ const CartBadge = () => {
 
   return (
     <Link to="/cart" className="relative">
-      <FaShoppingCart className="text-xl text-white" size={28} />
+      <ShoppingCart className="h-7 w-7 text-white" strokeWidth={1.75} aria-hidden />
 
       {totalItems > 0 && (
         <span className="absolute -top-2 -right-2 bg-secondary text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center">
