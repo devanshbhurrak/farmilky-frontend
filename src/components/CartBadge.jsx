@@ -14,11 +14,15 @@ const CartBadge = () => {
     data?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
   return (
-    <Link to="/cart" className="relative">
+    <Link
+      to="/cart"
+      className="relative"
+      aria-label={totalItems > 0 ? `Cart, ${totalItems} item${totalItems === 1 ? "" : "s"}` : "Cart"}
+    >
       <ShoppingCart className="h-7 w-7 text-white" strokeWidth={1.75} aria-hidden />
 
       {totalItems > 0 && (
-        <span className="absolute -top-2 -right-2 bg-secondary text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center">
+        <span className="absolute -top-2 -right-2 bg-secondary text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center" aria-hidden="true">
           {totalItems}
         </span>
       )}

@@ -1,13 +1,11 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { createAuthBaseQuery } from "../../app/baseQueryWithReauth";
 
 const COMPLAINT_API = `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/complaints`;
 
 export const complaintApi = createApi({
   reducerPath: "complaintApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: COMPLAINT_API,
-    credentials: "include",
-  }),
+  baseQuery: createAuthBaseQuery(COMPLAINT_API),
   tagTypes: ["Complaint"],
 
   endpoints: (builder) => ({

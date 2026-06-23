@@ -1,15 +1,13 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import { resetUserScopedApiState } from '../../app/resetUserScopedApiState';
 import { loginUser, logoutUser } from '../authSlice';
+import { createAuthBaseQuery } from '../../app/baseQueryWithReauth';
 
 const USER_API = `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/user/`;
 
 export const authApi = createApi({
     reducerPath: 'authApi',
-    baseQuery: fetchBaseQuery({
-        baseUrl: USER_API,
-        credentials: 'include'
-    }),
+    baseQuery: createAuthBaseQuery(USER_API),
     endpoints: (builder) => ({
         registerUser: builder.mutation({
             query: (data) => ({

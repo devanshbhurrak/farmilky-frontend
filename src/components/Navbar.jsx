@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link, NavLink, useLocation } from "react-router-dom";
@@ -7,6 +7,8 @@ import CartBadge from "./CartBadge";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const location = useLocation();
   const user = useSelector((state) => state.auth.user);
   const [logoutUser] = useLogoutUserMutation();
@@ -18,10 +20,13 @@ const Navbar = () => {
     { text: "Order Now", path: "/order" },
   ];
 
+  // Close mobile menu and dropdown on route change
   useEffect(() => {
     setMenuOpen(false);
+    setDropdownOpen(false);
   }, [location.pathname]);
 
+  // Lock body scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => {
@@ -29,12 +34,41 @@ const Navbar = () => {
     };
   }, [menuOpen]);
 
+  // Close dropdown on Escape key or click outside
+  useEffect(() => {
+    if (!dropdownOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") setDropdownOpen(false);
+    };
+
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownOpen]);
+
   return (
     <>
       <nav className="sticky top-0 z-50 bg-primary text-white shadow-md">
         <div className="app-shell flex items-center justify-between py-4">
-          <Link to="/" className="font-bold text-2xl sm:text-3xl">
-            Farmilky
+          <Link to="/" className="flex items-center gap-2">
+            <img
+              src="/logo2.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-8 w-8 sm:h-9 sm:w-9 shrink-0"
+              style={{ filter: "brightness(0) invert(1)" }}
+            />
+            <span className="font-bold text-2xl sm:text-3xl">Farmilky</span>
           </Link>
 
           <ul className="hidden md:flex gap-6 font-semibold relative">
@@ -64,14 +98,21 @@ const Navbar = () => {
                 Login
               </Link>
             ) : (
-              <div className="hidden md:block relative group">
-                <button className="flex items-center gap-2 font-semibold hover:text-secondary transition-colors py-2">
+              <div className="relative hidden md:block" ref={dropdownRef}>
+                <button
+                  onClick={() => setDropdownOpen((v) => !v)}
+                  aria-haspopup="true"
+                  aria-expanded={dropdownOpen}
+                  aria-controls="user-dropdown-menu"
+                  className="flex items-center gap-2 py-2 font-semibold transition-colors hover:text-secondary"
+                >
                   <span className="max-w-32 truncate">{user.name}</span>
                   <svg
-                    className="w-4 h-4 transition-transform group-hover:rotate-180"
+                    className={`h-4 w-4 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -82,46 +123,58 @@ const Navbar = () => {
                   </svg>
                 </button>
 
-                <div className="absolute right-0 top-full pt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                  <div className="bg-white text-gray-800 rounded-2xl shadow-xl border border-gray-100 overflow-hidden flex flex-col py-2">
-                    <Link
-                      to="/profile"
-                      className="px-4 py-2 hover:bg-gray-50 hover:text-secondary text-left transition-colors"
-                    >
-                      My Profile
-                    </Link>
-                    <Link
-                      to="/my-orders"
-                      className="px-4 py-2 hover:bg-gray-50 hover:text-secondary text-left transition-colors"
-                    >
-                      My Orders
-                    </Link>
-                    <Link
-                      to="/subscriptions"
-                      className="px-4 py-2 hover:bg-gray-50 hover:text-secondary text-left transition-colors"
-                    >
-                      My Subscriptions
-                    </Link>
-                    <Link
-                      to="/passbook"
-                      className="px-4 py-2 hover:bg-gray-50 hover:text-secondary text-left transition-colors"
-                    >
-                      My Passbook
-                    </Link>
-                    <Link
-                      to="/my-complaints"
-                      className="px-4 py-2 hover:bg-gray-50 hover:text-secondary text-left transition-colors"
-                    >
-                      My Complaints
-                    </Link>
-                    <button
-                      onClick={() => logoutUser()}
-                      className="px-4 py-2 hover:bg-red-50 hover:text-red-600 text-left transition-colors border-t border-gray-50 mt-1"
-                    >
-                      Logout
-                    </button>
+                {dropdownOpen && (
+                  <div
+                    id="user-dropdown-menu"
+                    role="menu"
+                    className="absolute right-0 top-full z-50 mt-2 w-48"
+                  >
+                    <div className="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white py-2 text-gray-800 shadow-xl">
+                      <Link
+                        to="/profile"
+                        role="menuitem"
+                        className="px-4 py-2 text-left transition-colors hover:bg-gray-50 hover:text-secondary"
+                      >
+                        My Profile
+                      </Link>
+                      <Link
+                        to="/my-orders"
+                        role="menuitem"
+                        className="px-4 py-2 text-left transition-colors hover:bg-gray-50 hover:text-secondary"
+                      >
+                        My Orders
+                      </Link>
+                      <Link
+                        to="/subscriptions"
+                        role="menuitem"
+                        className="px-4 py-2 text-left transition-colors hover:bg-gray-50 hover:text-secondary"
+                      >
+                        My Subscriptions
+                      </Link>
+                      <Link
+                        to="/passbook"
+                        role="menuitem"
+                        className="px-4 py-2 text-left transition-colors hover:bg-gray-50 hover:text-secondary"
+                      >
+                        My Passbook
+                      </Link>
+                      <Link
+                        to="/my-complaints"
+                        role="menuitem"
+                        className="px-4 py-2 text-left transition-colors hover:bg-gray-50 hover:text-secondary"
+                      >
+                        My Complaints
+                      </Link>
+                      <button
+                        onClick={() => logoutUser()}
+                        role="menuitem"
+                        className="mt-1 border-t border-gray-50 px-4 py-2 text-left transition-colors hover:bg-red-50 hover:text-red-600"
+                      >
+                        Logout
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 

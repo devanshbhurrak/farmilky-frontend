@@ -1,142 +1,151 @@
-import Home from './pages/Home'
+import { lazy, Suspense } from 'react'
 import { Route, Routes } from 'react-router-dom'
-import WhyFarmilkyPage from './pages/WhyFarmilky'
-import ContactPage from './pages/Contact'
-import OrderNowPage from './pages/Order'
-import AuthPage from './pages/Login'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import ScrollToTop from './components/ScrollToTop'
-import { Toaster } from 'react-hot-toast';
-import Cart from './pages/Cart'
-import Subscription from './pages/Subscription'
-import MySubscriptions from './pages/MySubscription'
-import Checkout from './pages/Checkout'
-import OrderSuccess from './pages/OrderSuccess'
-import MyOrders from './pages/MyOrders'
-import OrderDetail from './pages/OrderDetail'
-import SubscriptionDetail from './pages/SubscriptionDetail'
-import Profile from './pages/Profile'
-import MyComplaints from './pages/MyComplaints'
-import RaiseComplaint from './pages/RaiseComplaint'
-import Passbook from './pages/Passbook'
+import Loader from './components/Loader'
+import { Toaster } from 'react-hot-toast'
 
+// Lazy-loaded pages — each chunk is only fetched when the user navigates to that route
+const Home               = lazy(() => import('./pages/Home'))
+const WhyFarmilkyPage    = lazy(() => import('./pages/WhyFarmilky'))
+const ContactPage        = lazy(() => import('./pages/Contact'))
+const OrderNowPage       = lazy(() => import('./pages/Order'))
+const AuthPage           = lazy(() => import('./pages/Login'))
+const Cart               = lazy(() => import('./pages/Cart'))
+const Subscription       = lazy(() => import('./pages/Subscription'))
+const MySubscriptions    = lazy(() => import('./pages/MySubscription'))
+const Checkout           = lazy(() => import('./pages/Checkout'))
+const OrderSuccess       = lazy(() => import('./pages/OrderSuccess'))
+const MyOrders           = lazy(() => import('./pages/MyOrders'))
+const OrderDetail        = lazy(() => import('./pages/OrderDetail'))
+const SubscriptionDetail = lazy(() => import('./pages/SubscriptionDetail'))
+const Profile            = lazy(() => import('./pages/Profile'))
+const MyComplaints       = lazy(() => import('./pages/MyComplaints'))
+const RaiseComplaint     = lazy(() => import('./pages/RaiseComplaint'))
+const Passbook           = lazy(() => import('./pages/Passbook'))
+const NotFound           = lazy(() => import('./pages/NotFound'))
+const ProductDetail      = lazy(() => import('./pages/ProductDetail'))
 
 const App = () => {
   return (
     <>
-    <ScrollToTop />
-    <Routes>
-      <Route path='/' element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="why-farmilky" element={<WhyFarmilkyPage />} />
-        <Route path="contact" element={<ContactPage />} />
-        <Route path="order" element={<OrderNowPage />} />
-        <Route path="cart" element={<Cart />} />
-        <Route
-          path="subscribe"
-          element={
-            <ProtectedRoute>
-              <Subscription />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/subscriptions"
-          element={
-            <ProtectedRoute>
-              <MySubscriptions />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/passbook"
-          element={
-            <ProtectedRoute>
-              <Passbook />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/checkout"
-          element={
-            <ProtectedRoute>
-              <Checkout />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/order-success/:id"
-          element={
-            <ProtectedRoute>
-              <OrderSuccess />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/my-orders"
-          element={
-            <ProtectedRoute>
-              <MyOrders />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/my-orders/:id"
-          element={
-            <ProtectedRoute>
-              <OrderDetail />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/subscriptions/:id"
-          element={
-            <ProtectedRoute>
-              <SubscriptionDetail />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/my-complaints"
-          element={
-            <ProtectedRoute>
-              <MyComplaints />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/raise-complaint"
-          element={
-            <ProtectedRoute>
-              <RaiseComplaint />
-            </ProtectedRoute>
-          }
-        />
+      <ScrollToTop />
+      <Suspense fallback={<Loader className="min-h-screen" message="Loading..." />}>
+        <Routes>
+          <Route path='/' element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="why-farmilky" element={<WhyFarmilkyPage />} />
+            <Route path="contact" element={<ContactPage />} />
+            <Route path="order" element={<OrderNowPage />} />
+            <Route path="product/:id" element={<ProductDetail />} />
+            <Route path="cart" element={<Cart />} />
+            <Route
+              path="subscribe"
+              element={
+                <ProtectedRoute>
+                  <Subscription />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/subscriptions"
+              element={
+                <ProtectedRoute>
+                  <MySubscriptions />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/passbook"
+              element={
+                <ProtectedRoute>
+                  <Passbook />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/checkout"
+              element={
+                <ProtectedRoute>
+                  <Checkout />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/order-success/:id"
+              element={
+                <ProtectedRoute>
+                  <OrderSuccess />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-orders"
+              element={
+                <ProtectedRoute>
+                  <MyOrders />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-orders/:id"
+              element={
+                <ProtectedRoute>
+                  <OrderDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/subscriptions/:id"
+              element={
+                <ProtectedRoute>
+                  <SubscriptionDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-complaints"
+              element={
+                <ProtectedRoute>
+                  <MyComplaints />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/raise-complaint"
+              element={
+                <ProtectedRoute>
+                  <RaiseComplaint />
+                </ProtectedRoute>
+              }
+            />
 
-      </Route>
+            <Route path="*" element={<NotFound />} />
+          </Route>
 
-      <Route path="/login" element={<AuthPage />} />
-      <Route path="/signup" element={<AuthPage />} />
-    </Routes>
-    <Toaster
-      position="top-center"
-      toastOptions={{
-        duration: 3000,
-        style: {
-          borderRadius: "16px",
-          padding: "12px 16px",
-        },
-      }}
-    />
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="/signup" element={<AuthPage />} />
+        </Routes>
+      </Suspense>
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            borderRadius: "16px",
+            padding: "12px 16px",
+          },
+        }}
+      />
     </>
   )
 }

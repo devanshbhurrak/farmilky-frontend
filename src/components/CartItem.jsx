@@ -1,6 +1,7 @@
 import React from "react";
 import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { formatCurrency } from "../utils/formatCurrency";
 
 const CartItem = ({ item, onQuantityChange, onRemove }) => {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
           <img
             src={product.image}
             alt={product.name}
+            loading="lazy"
+            decoding="async"
             className="h-32 w-full rounded-2xl bg-white object-contain p-3 sm:h-36 sm:w-36"
           />
         </div>
@@ -25,7 +28,7 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
               {product.name}
             </h3>
             <p className="mt-1 text-sm text-gray-600">
-              Rs. {product.price}
+              {formatCurrency(product.price)}
               <span className="text-gray-400"> / {product.unit}</span>
             </p>
           </div>
@@ -67,18 +70,20 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
               </button>
             </div>
 
-            <button
-              onClick={() => navigate(`/subscribe?productId=${product._id}`)}
-              className="self-start text-left text-sm font-medium text-secondary underline-offset-4 hover:underline"
-            >
-              Make this a daily subscription
-            </button>
+            {product.category === "milk" && (
+              <button
+                onClick={() => navigate(`/subscribe?productId=${product._id}`)}
+                className="self-start text-left text-sm font-medium text-secondary underline-offset-4 hover:underline"
+              >
+                Make this a daily subscription
+              </button>
+            )}
           </div>
         </div>
 
         <div className="flex items-center justify-between sm:flex-col sm:items-end">
           <p className="text-lg font-semibold text-primary sm:text-xl">
-            Rs. {item.quantity * product.price}
+            {formatCurrency(item.quantity * product.price)}
           </p>
         </div>
       </div>

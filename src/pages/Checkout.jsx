@@ -2,6 +2,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
+import useDocumentTitle from "../hooks/useDocumentTitle";
+import { formatCurrency } from "../utils/formatCurrency";
 import { useGetCartQuery } from "../features/api/cartApi";
 import {
   useCreateOrderMutation,
@@ -12,6 +15,7 @@ import {
 } from "../features/api/authApi";
 
 const Checkout = () => {
+  useDocumentTitle("Checkout")
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
@@ -181,7 +185,13 @@ const Checkout = () => {
   }
 
   if (isCartLoading) {
-    return <div className="py-20 text-center">Loading...</div>;
+    return (
+      <section className="page-shell">
+        <div className="app-shell">
+          <Loader message="Setting up checkout..." />
+        </div>
+      </section>
+    );
   }
 
   if (cartItems.length === 0) {
@@ -356,13 +366,15 @@ const Checkout = () => {
                 >
                   Cash on Delivery
                 </button>
-                <button
-                  type="button"
-                  className="flex-1 cursor-not-allowed rounded-xl border-2 border-gray-100 px-4 py-3 text-gray-400"
-                  disabled
+                <div
+                  aria-label="Online payment – coming soon"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-400"
                 >
-                  Online (Coming Soon)
-                </button>
+                  <span>Online Payment</span>
+                  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                    Coming Soon
+                  </span>
+                </div>
               </div>
             </div>
           </form>
@@ -380,10 +392,12 @@ const Checkout = () => {
                   key={item.productId._id}
                   className="flex items-center gap-3 border-b border-gray-100 pb-4 last:border-0 last:pb-0 sm:gap-4"
                 >
-                  <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100 p-2 sm:h-16 sm:w-16">
+                  <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 p-2 sm:h-16 sm:w-16">
                     <img
                       src={item.productId.image || "https://placehold.co/100"}
                       alt={item.productId.name}
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-contain"
                     />
                   </div>
@@ -394,7 +408,7 @@ const Checkout = () => {
                     <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
                   </div>
                   <p className="text-right font-semibold">
-                    Rs. {item.productId.price * item.quantity}
+                    {formatCurrency(item.productId.price * item.quantity)}
                   </p>
                 </div>
               );
@@ -404,7 +418,7 @@ const Checkout = () => {
           <div className="space-y-2 border-t border-gray-200 pt-4 text-gray-600">
             <div className="flex justify-between">
               <span>Subtotal</span>
-              <span>Rs. {totalAmount}</span>
+              <span>{formatCurrency(totalAmount)}</span>
             </div>
             <div className="flex justify-between">
               <span>Delivery</span>
@@ -414,7 +428,7 @@ const Checkout = () => {
 
           <div className="mt-4 mb-8 flex justify-between border-t border-gray-200 pt-4 text-xl font-bold text-primary">
             <span>Total</span>
-            <span>Rs. {totalAmount}</span>
+            <span>{formatCurrency(totalAmount)}</span>
           </div>
 
           <button
@@ -422,7 +436,7 @@ const Checkout = () => {
             disabled={isOrdering || !isAddressValid}
             className="w-full rounded-xl bg-secondary py-4 text-lg font-bold text-white transition disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isOrdering ? "Processing..." : `Place Order (Rs. ${totalAmount})`}
+            {isOrdering ? "Processing..." : `Place Order (${formatCurrency(totalAmount)})`}
           </button>
           <p className="mt-3 text-center text-xs text-gray-500">
             Review your address before placing the order. Cash on delivery is

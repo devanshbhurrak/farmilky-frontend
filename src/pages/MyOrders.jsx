@@ -1,13 +1,20 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { PackageOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 import EmptyState from "../components/EmptyState";
 import ErrorState from "../components/ErrorState";
 import Loader from "../components/Loader";
+import Pagination from "../components/Pagination";
+import useDocumentTitle from "../hooks/useDocumentTitle";
+import { formatCurrency } from "../utils/formatCurrency";
 import { useGetUserOrdersQuery } from "../features/api/orderApi";
 
+const PAGE_SIZE = 5;
+
 const MyOrders = () => {
-  const { data: orderData, isLoading, error } = useGetUserOrdersQuery();
+  useDocumentTitle("My Orders")
+  const { data: orderData, isLoading, error, refetch } = useGetUserOrdersQuery();
+  const [page, setPage] = useState(1);
   const orders = useMemo(
     () =>
       [...(orderData?.order || [])].sort(
@@ -15,6 +22,8 @@ const MyOrders = () => {
       ),
     [orderData?.order]
   );
+  const totalPages = Math.ceil(orders.length / PAGE_SIZE);
+  const paginatedOrders = orders.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   if (isLoading) {
     return <Loader className="min-h-[60vh]" message="Loading your orders..." />;
@@ -25,7 +34,7 @@ const MyOrders = () => {
       <ErrorState
         title="Failed to load orders"
         message="We could not fetch your order history right now."
-        onAction={() => window.location.reload()}
+        onAction={refetch}
       />
     );
   }
@@ -46,7 +55,7 @@ const MyOrders = () => {
           />
         ) : (
           <div className="space-y-6">
-            {orders.map((order) => (
+            {paginatedOrders.map((order) => (
               <div
                 key={order._id}
                 className="surface-card rounded-2xl p-5 transition hover:border-gray-200 sm:p-6"
@@ -106,10 +115,12 @@ const MyOrders = () => {
                 <div className="space-y-4">
                   {order.items.map((item) => (
                     <div key={item._id} className="flex items-center gap-3 sm:gap-4">
-                      <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100 p-2 sm:h-16 sm:w-16">
+                      <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 p-2 sm:h-16 sm:w-16">
                         <img
                           src={item.image || "https://placehold.co/100"}
                           alt={item.name}
+                          loading="lazy"
+                          decoding="async"
                           className="h-full w-full object-contain"
                         />
                       </div>
@@ -118,11 +129,11 @@ const MyOrders = () => {
                           {item.name}
                         </h4>
                         <p className="text-sm text-gray-500">
-                          Qty: {item.quantity} x Rs. {item.price}
+                          Qty: {item.quantity} x {formatCurrency(item.price)}
                         </p>
                       </div>
                       <div className="text-right font-semibold text-gray-800">
-                        Rs. {item.price * item.quantity}
+                        {formatCurrency(item.price * item.quantity)}
                       </div>
                     </div>
                   ))}
@@ -132,7 +143,7 @@ const MyOrders = () => {
                   <div>
                     <p className="text-sm text-gray-500">Total Amount</p>
                     <p className="text-xl font-bold text-primary">
-                      Rs. {order.totalAmount}
+                      {formatCurrency(order.totalAmount)}
                     </p>
                   </div>
                   <Link
@@ -144,6 +155,7 @@ const MyOrders = () => {
                 </div>
               </div>
             ))}
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
           </div>
         )}
       </div>

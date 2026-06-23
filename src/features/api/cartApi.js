@@ -1,13 +1,11 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { createAuthBaseQuery } from "../../app/baseQueryWithReauth";
 
 const CART_API = `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/cart`;
 
 export const cartApi = createApi({
     reducerPath: 'cartApi',
-    baseQuery: fetchBaseQuery({
-        baseUrl: CART_API,
-        credentials: 'include',
-    }),
+    baseQuery: createAuthBaseQuery(CART_API),
     tagTypes: ["Cart"],
 
     endpoints: (builder) => ({

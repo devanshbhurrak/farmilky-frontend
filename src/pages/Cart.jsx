@@ -3,6 +3,8 @@ import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import CartItem from "../components/CartItem";
+import useDocumentTitle from "../hooks/useDocumentTitle";
+import { formatCurrency } from "../utils/formatCurrency";
 import {
   useClearCartMutation,
   useGetCartQuery,
@@ -11,6 +13,7 @@ import {
 } from "../features/api/cartApi";
 
 const Cart = () => {
+  useDocumentTitle("Cart")
   const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
 
@@ -57,9 +60,34 @@ const Cart = () => {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="animate-pulse text-gray-500">Loading your cart...</p>
-      </div>
+      <section className="page-shell">
+        <div className="app-shell">
+          <div className="mb-6 hidden h-8 w-48 animate-pulse rounded-xl bg-gray-200 md:block" />
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-10">
+            <div className="space-y-5 lg:col-span-2">
+              {[1, 2].map((i) => (
+                <div key={i} className="animate-pulse rounded-[28px] border border-gray-200 bg-gray-50 p-5 sm:p-7">
+                  <div className="flex flex-col gap-5 sm:flex-row sm:gap-6">
+                    <div className="h-32 w-full flex-shrink-0 rounded-2xl bg-gray-200 sm:h-36 sm:w-36" />
+                    <div className="flex flex-1 flex-col gap-3">
+                      <div className="h-5 w-2/3 rounded-lg bg-gray-200" />
+                      <div className="h-4 w-1/3 rounded-lg bg-gray-200" />
+                      <div className="mt-3 h-10 w-36 rounded-full bg-gray-200" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="surface-card h-fit animate-pulse space-y-4 p-6 lg:p-8">
+              <div className="h-6 w-36 rounded-lg bg-gray-200" />
+              <div className="h-4 w-full rounded-lg bg-gray-200" />
+              <div className="h-4 w-3/4 rounded-lg bg-gray-200" />
+              <div className="mt-4 h-12 w-full rounded-xl bg-gray-200" />
+              <div className="h-10 w-full rounded-xl bg-gray-200" />
+            </div>
+          </div>
+        </div>
+      </section>
     );
   }
 
@@ -97,6 +125,7 @@ const Cart = () => {
   };
 
   const handleClearCart = async () => {
+    if (!window.confirm("Remove all items from your cart?")) return;
     try {
       await clearCart().unwrap();
       toast.success("Cart cleared");
@@ -149,7 +178,7 @@ const Cart = () => {
 
               <div className="mb-6 flex justify-between text-lg font-semibold">
                 <span>Total Amount</span>
-                <span className="text-primary">Rs. {totalAmount}</span>
+                <span className="text-primary">{formatCurrency(totalAmount)}</span>
               </div>
 
               <button

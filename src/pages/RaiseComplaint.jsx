@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { ArrowLeft } from "lucide-react";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 import { useCreateComplaintMutation } from "../features/api/complaintApi";
 
 const RELATED_TO_OPTIONS = [
@@ -13,6 +14,7 @@ const RELATED_TO_OPTIONS = [
 ];
 
 const RaiseComplaint = () => {
+  useDocumentTitle("Raise a Complaint")
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [createComplaint, { isLoading }] = useCreateComplaintMutation();

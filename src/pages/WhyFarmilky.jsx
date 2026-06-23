@@ -1,8 +1,10 @@
 import React from "react";
 import { CircleCheck, Sprout, Tractor, Truck, UserCheck } from "lucide-react";
 import { Link } from "react-router-dom";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 
 export default function WhyFarmilkyPage() {
+  useDocumentTitle("Why Farmilky")
   return (
     <>
       <section className="page-hero">
@@ -25,6 +27,8 @@ export default function WhyFarmilkyPage() {
               <img
                 src="/milk.jpg"
                 alt="Pure, fresh Farmilky milk"
+                loading="lazy"
+                decoding="async"
                 className="w-full object-cover"
               />
             </div>
@@ -77,6 +81,8 @@ export default function WhyFarmilkyPage() {
               <img
                 src="/farmer.png"
                 alt="Farmilky farmers"
+                loading="lazy"
+                decoding="async"
                 className="w-full object-cover"
               />
             </div>

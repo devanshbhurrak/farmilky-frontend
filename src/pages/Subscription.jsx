@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import useDocumentTitle from "../hooks/useDocumentTitle";
+import { formatCurrency } from "../utils/formatCurrency";
 import { useGetProductByIdQuery } from "../features/api/productApi";
 import { useCreateSubscriptionMutation } from "../features/api/subscriptionApi";
 
@@ -34,6 +36,7 @@ const todayStr = () => {
 };
 
 const Subscription = () => {
+  useDocumentTitle("Subscribe")
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const productId = searchParams.get("productId");
@@ -111,12 +114,14 @@ const Subscription = () => {
               <img
                 src={product.image}
                 alt={product.name}
+                loading="lazy"
+                decoding="async"
                 className="h-52 w-52 object-contain drop-shadow-2xl sm:h-64 sm:w-64"
               />
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold text-gray-900">{product.name}</h2>
                 <div className="inline-block rounded-full bg-[#F7F3ED] px-4 py-1.5">
-                  <span className="text-2xl font-bold text-primary">Rs. {product.price}</span>
+                  <span className="text-2xl font-bold text-primary">{formatCurrency(product.price)}</span>
                   <span className="ml-1 font-medium text-gray-500">/ {product.unit}</span>
                 </div>
               </div>
@@ -229,7 +234,7 @@ const Subscription = () => {
                   </div>
                   <div>
                     <p className="text-xs font-bold uppercase tracking-wide text-gray-500">Est. Monthly Cost</p>
-                    <p className="mt-1 text-lg font-bold text-secondary">Rs. {estimatedMonthlyCost}</p>
+                    <p className="mt-1 text-lg font-bold text-secondary">{formatCurrency(estimatedMonthlyCost)}</p>
                   </div>
                 </div>
 
@@ -257,7 +262,7 @@ const Subscription = () => {
                       </>
                     )}
                     . Your estimated bill is around{" "}
-                    <span className="font-semibold text-gray-800">Rs. {estimatedMonthlyCost}</span> per month.
+                    <span className="font-semibold text-gray-800">{formatCurrency(estimatedMonthlyCost)}</span> per month.
                   </p>
                 </div>
 

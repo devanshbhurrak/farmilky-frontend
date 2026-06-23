@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { ArrowLeft, MapPin, Plus, Trash2, User, Phone, Mail, Clock, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 import Loader from "../components/Loader";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 import {
   useGetUserProfileQuery,
   useUpdateProfileMutation,
@@ -28,6 +29,7 @@ const validateAddress = (addr) => {
 };
 
 const Profile = () => {
+  useDocumentTitle("My Profile")
   const { data: profileData, isLoading } = useGetUserProfileQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });

@@ -3,10 +3,13 @@ import { Link } from "react-router-dom";
 import EmptyState from "../components/EmptyState";
 import ErrorState from "../components/ErrorState";
 import Loader from "../components/Loader";
+import useDocumentTitle from "../hooks/useDocumentTitle";
+import { formatCurrency } from "../utils/formatCurrency";
 import { useGetUserSubscriptionsQuery } from "../features/api/subscriptionApi";
 
 const MySubscriptions = () => {
-  const { data, isLoading, error } = useGetUserSubscriptionsQuery();
+  useDocumentTitle("My Subscriptions")
+  const { data, isLoading, error, refetch } = useGetUserSubscriptionsQuery();
 
   const subscriptions = useMemo(
     () =>
@@ -27,7 +30,7 @@ const MySubscriptions = () => {
       <ErrorState
         title="Failed to load subscriptions"
         message="We could not fetch your active plans right now."
-        onAction={() => window.location.reload()}
+        onAction={refetch}
       />
     );
   }
@@ -88,6 +91,8 @@ const MySubscriptions = () => {
                   <img
                     src={sub.productId.image}
                     alt={sub.productId.name}
+                    loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-contain mix-blend-multiply"
                   />
                 </div>
@@ -96,7 +101,7 @@ const MySubscriptions = () => {
                     {sub.productId.name}
                   </h2>
                   <p className="font-medium text-primary">
-                    Rs. {sub.productId.price}
+                    {formatCurrency(sub.productId.price)}
                     <span className="text-sm text-gray-400"> / {sub.productId.unit}</span>
                   </p>
                 </div>
@@ -138,7 +143,7 @@ const MySubscriptions = () => {
                     Current Due
                   </span>
                   <span className="text-lg font-bold text-red-600">
-                    Rs. {sub.pendingAmount || 0}
+                    {formatCurrency(sub.pendingAmount || 0)}
                   </span>
                 </div>
               </div>

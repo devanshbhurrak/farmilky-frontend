@@ -1,13 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, FileText, IndianRupee, History } from "lucide-react";
 import Loader from "../components/Loader";
+import Pagination from "../components/Pagination";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 import { useGetMyPassbookQuery } from "../features/api/passbookApi";
 
+const PAGE_SIZE = 10;
+
 const Passbook = () => {
-  const { data: passbookData, isLoading, error } = useGetMyPassbookQuery();
+  useDocumentTitle("My Passbook")
+  const { data: passbookData, isLoading, error, refetch } = useGetMyPassbookQuery();
+  const [page, setPage] = useState(1);
 
   const ledgerEntries = passbookData?.entries || [];
+  const totalPages = Math.ceil(ledgerEntries.length / PAGE_SIZE);
+  const paginatedEntries = ledgerEntries.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   if (isLoading) return <section className="min-h-screen bg-background py-16"><Loader /></section>;
 
@@ -17,8 +25,8 @@ const Passbook = () => {
         <div className="surface-card max-w-md p-8 text-center">
           <h1 className="mb-3 text-2xl font-bold text-primary">Failed to load Passbook</h1>
           <p className="text-gray-500 mb-6">There was an error fetching your transaction history.</p>
-          <button 
-            onClick={() => window.location.reload()} 
+          <button
+            onClick={refetch}
             className="inline-flex rounded-xl bg-secondary px-6 py-3 font-semibold text-white"
           >
             Retry
@@ -51,12 +59,18 @@ const Passbook = () => {
             <div className="surface-panel px-6 py-4 rounded-2xl border border-gray-100 bg-gray-50/50">
                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Current Outstanding Balance</p>
                <div className="flex items-baseline gap-1">
-                  <span className="text-xs font-bold text-gray-400">Rs.</span>
-                  <span className={`text-2xl font-black ${ (passbookData?.user?.accountBalance || 0) > 0 ? "text-red-600" : "text-green-600"}`}>
-                    {Math.abs(passbookData?.user?.accountBalance || 0)}
+                  <span className="text-xs font-bold text-gray-400">₹</span>
+                  <span className={`text-2xl font-black ${
+                    (passbookData?.user?.accountBalance ?? 0) > 0 ? "text-red-600"
+                    : (passbookData?.user?.accountBalance ?? 0) < 0 ? "text-green-600"
+                    : "text-gray-500"
+                  }`}>
+                    {Math.abs(passbookData?.user?.accountBalance ?? 0)}
                   </span>
                   <span className="text-xs font-bold text-gray-500 ml-1">
-                    {(passbookData?.user?.accountBalance || 0) > 0 ? "Due" : "Advance"}
+                    {(passbookData?.user?.accountBalance ?? 0) > 0 ? "Due"
+                      : (passbookData?.user?.accountBalance ?? 0) < 0 ? "Advance"
+                      : "Settled"}
                   </span>
                </div>
             </div>
@@ -69,6 +83,7 @@ const Passbook = () => {
             </div>
 
             {ledgerEntries.length > 0 ? (
+              <>
               <div className="overflow-x-auto -mx-6 sm:mx-0">
                 <table className="w-full text-left text-sm border-separate border-spacing-0">
                   <thead>
@@ -80,8 +95,8 @@ const Passbook = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
-                    {ledgerEntries.map((entry, idx) => (
-                      <tr key={idx} className="group hover:bg-gray-50/30 transition-colors">
+                    {paginatedEntries.map((entry) => (
+                      <tr key={`${entry.date}-${entry.description}`} className="group hover:bg-gray-50/30 transition-colors">
                         <td className="px-6 py-5 text-gray-600 whitespace-nowrap">
                           {new Date(entry.date).toLocaleDateString(undefined, { 
                             day: '2-digit',
@@ -109,6 +124,8 @@ const Passbook = () => {
                   </tbody>
                 </table>
               </div>
+              <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+              </>
             ) : (
               <div className="bg-gray-50 rounded-3xl p-12 text-center border-2 border-dashed border-gray-200">
                 <div className="h-16 w-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-4 text-gray-300">

@@ -31,6 +31,8 @@ const Hero = () => {
             alt="Farmilky fresh milk bottle"
             width={500}
             height={500}
+            fetchpriority="high"
+            decoding="async"
             className="max-h-[420px] w-full max-w-md rounded-3xl object-cover shadow-lg"
           />
         </div>

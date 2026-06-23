@@ -1,13 +1,11 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { createAuthBaseQuery } from "../../app/baseQueryWithReauth";
 
 const SUBSCRIPTION_API = `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/subscriptions`;
 
 export const subscriptionApi = createApi({
   reducerPath: "subscriptionApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: SUBSCRIPTION_API,
-    credentials: "include",
-  }),
+  baseQuery: createAuthBaseQuery(SUBSCRIPTION_API),
   tagTypes: ["Subscription"],
 
   endpoints: (builder) => ({

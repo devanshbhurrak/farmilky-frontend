@@ -1,6 +1,8 @@
 import React from "react";
 import { ShoppingCart } from "lucide-react";
 import toast from "react-hot-toast";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { formatCurrency } from "../utils/formatCurrency";
 import {
   useAddToCartMutation,
   useGetCartQuery,
@@ -8,7 +10,6 @@ import {
   useUpdateCartItemMutation,
 } from "../features/api/cartApi";
 import { useSelector } from "react-redux";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Product = ({ product }) => {
   const user = useSelector((state) => state.auth.user);
@@ -72,12 +73,16 @@ const Product = ({ product }) => {
   };
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl bg-gray-50 shadow-lg transition hover:shadow-2xl">
-      <img
-        src={product.image}
-        alt={product.name}
-        className="h-56 w-full bg-white object-contain p-4 sm:h-64"
-      />
+    <div className="flex flex-col overflow-hidden rounded-2xl bg-gray-50 shadow-lg transition hover:shadow-2xl hover:-translate-y-1 duration-300">
+      <Link to={`/product/${product._id}`} tabIndex={-1} aria-hidden>
+        <img
+          src={product.image}
+          alt={product.name}
+          loading="lazy"
+          decoding="async"
+          className="h-56 w-full bg-white object-contain p-4 sm:h-64"
+        />
+      </Link>
 
       <div className="flex grow flex-col p-5 sm:p-6">
         {isSubscriptionFriendly && (
@@ -86,12 +91,14 @@ const Product = ({ product }) => {
           </span>
         )}
 
-        <h3 className="text-xl font-bold text-primary sm:text-2xl">
-          {product.name}
-        </h3>
+        <Link to={`/product/${product._id}`}>
+          <h3 className="text-xl font-bold text-primary transition hover:text-secondary sm:text-2xl">
+            {product.name}
+          </h3>
+        </Link>
 
         <p className="mt-2 text-xl font-semibold text-secondary">
-          Rs. {product.price}{" "}
+          {formatCurrency(product.price)}{" "}
           <span className="text-base text-gray-600">{product.unit}</span>
         </p>
 

@@ -1,14 +1,12 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { cartApi } from "./cartApi";
+import { createAuthBaseQuery } from "../../app/baseQueryWithReauth";
 
 const ORDER_API = `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/order`;
 
 export const orderApi = createApi({
   reducerPath: "orderApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: ORDER_API,
-    credentials: "include", // send JWT cookie
-  }),
+  baseQuery: createAuthBaseQuery(ORDER_API),
   tagTypes: ["Orders"],
 
   endpoints: (builder) => ({

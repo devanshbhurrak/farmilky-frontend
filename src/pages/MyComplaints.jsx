@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { MessageSquare, Plus } from "lucide-react";
 import { useGetMyComplaintsQuery } from "../features/api/complaintApi";
 import Loader from "../components/Loader";
+import Pagination from "../components/Pagination";
+import useDocumentTitle from "../hooks/useDocumentTitle";
+
+const PAGE_SIZE = 8;
 
 const STATUS_STYLES = {
   open: "bg-yellow-50 text-yellow-700",
@@ -19,8 +23,12 @@ const STATUS_LABELS = {
 };
 
 const MyComplaints = () => {
+  useDocumentTitle("My Complaints")
   const { data, isLoading } = useGetMyComplaintsQuery();
+  const [page, setPage] = useState(1);
   const complaints = data?.complaints ?? [];
+  const totalPages = Math.ceil(complaints.length / PAGE_SIZE);
+  const paginatedComplaints = complaints.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   if (isLoading) {
     return (
@@ -66,7 +74,7 @@ const MyComplaints = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {complaints.map((c) => (
+            {paginatedComplaints.map((c) => (
               <div key={c._id} className="surface-card p-5 sm:p-6">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 flex-1">
@@ -95,6 +103,7 @@ const MyComplaints = () => {
                 </div>
               </div>
             ))}
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
           </div>
         )}
       </div>

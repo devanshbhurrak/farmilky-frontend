@@ -3,10 +3,125 @@ import { ArrowLeft, MapPin, Package, Truck, RotateCcw } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import Loader from "../components/Loader";
+import useDocumentTitle from "../hooks/useDocumentTitle";
+import { formatCurrency } from "../utils/formatCurrency";
 import { useGetOrderByIdQuery } from "../features/api/orderApi";
 import { useRequestReturnMutation } from "../features/api/returnApi";
 
+// --- Order tracking timeline ---
+
+const TIMELINE_STEPS = [
+  { key: "placed",           label: "Order Placed",     shortLabel: "Placed",    getTime: (o) => o.createdAt },
+  { key: "confirmed",        label: "Confirmed",         shortLabel: "Confirmed", getTime: () => null },
+  { key: "out_for_delivery", label: "Out for Delivery",  shortLabel: "In Transit",getTime: () => null },
+  { key: "delivered",        label: "Delivered",         shortLabel: "Delivered", getTime: (o) => o.deliveredAt },
+];
+
+const STATUS_TO_IDX = {
+  placed: 0, confirmed: 1, out_for_delivery: 2, delivered: 3,
+};
+
+const OrderTimeline = ({ order }) => {
+  const status = order.orderStatus;
+  const isCancelled = status === "cancelled";
+  const currentIdx = STATUS_TO_IDX[status] ?? 0;
+
+  if (isCancelled) {
+    return (
+      <div className="my-4 flex items-center gap-2 border-y border-gray-100 py-6 sm:gap-4">
+        <div className="flex flex-col items-center gap-1.5">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-500 text-sm font-bold text-white">
+            ✓
+          </div>
+          <p className="max-w-[72px] text-center text-xs font-semibold leading-tight text-green-600">
+            Placed
+          </p>
+          <p className="text-center text-[10px] text-gray-400">
+            {new Date(order.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+          </p>
+        </div>
+
+        <div className="mt-[-18px] flex-1 border-t-2 border-dashed border-red-200" />
+
+        <div className="flex flex-col items-center gap-1.5">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-100 text-sm font-bold text-red-600">
+            ✕
+          </div>
+          <p className="max-w-[72px] text-center text-xs font-semibold leading-tight text-red-600">
+            Cancelled
+          </p>
+          {order.cancelledAt && (
+            <p className="text-center text-[10px] text-gray-400">
+              {new Date(order.cancelledAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="my-4 overflow-x-auto border-y border-gray-100 py-6">
+      <div className="flex min-w-[280px] items-start sm:min-w-0">
+        {TIMELINE_STEPS.map((step, idx) => {
+          const isDone   = idx < currentIdx;
+          const isActive = idx === currentIdx;
+          const timestamp = step.getTime(order);
+
+          return (
+            <React.Fragment key={step.key}>
+              <div className="flex flex-col items-center gap-1.5 px-2 sm:px-3">
+                <div
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
+                    isDone
+                      ? "bg-green-500 text-white"
+                      : isActive
+                      ? "bg-secondary text-white ring-4 ring-secondary/20"
+                      : "border-2 border-gray-200 bg-gray-50 text-gray-400"
+                  }`}
+                >
+                  {isDone ? "✓" : idx + 1}
+                </div>
+                <p
+                  className={`hidden max-w-[80px] text-center text-xs font-semibold leading-tight sm:block ${
+                    isDone ? "text-green-600" : isActive ? "text-secondary" : "text-gray-400"
+                  }`}
+                >
+                  {step.label}
+                </p>
+                <p
+                  className={`max-w-[64px] text-center text-xs font-semibold leading-tight sm:hidden ${
+                    isDone ? "text-green-600" : isActive ? "text-secondary" : "text-gray-400"
+                  }`}
+                >
+                  {step.shortLabel}
+                </p>
+                {timestamp && (
+                  <p className="text-center text-[10px] text-gray-400">
+                    {new Date(timestamp).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                  </p>
+                )}
+              </div>
+
+              {idx < TIMELINE_STEPS.length - 1 && (
+                <div
+                  className={`mt-[18px] min-w-[24px] flex-1 border-t-2 ${
+                    currentIdx > idx
+                      ? "border-green-400"
+                      : "border-dashed border-gray-200"
+                  }`}
+                />
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 const OrderDetail = () => {
+  useDocumentTitle("Order Details")
   const { id } = useParams();
   const { data, isLoading, error } = useGetOrderByIdQuery(id);
   const order = data?.order;
@@ -66,7 +181,7 @@ const OrderDetail = () => {
         </Link>
 
         <div className="surface-card p-6 sm:p-8">
-          <div className="flex flex-row items-start justify-between gap-5 border-b border-gray-100 pb-6">
+          <div className="flex flex-row items-start justify-between gap-5 pb-4">
             <div className="hidden md:block">
               <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-secondary">
                 Order Details
@@ -86,9 +201,11 @@ const OrderDetail = () => {
                     : "bg-blue-50 text-blue-600"
               }`}
             >
-              {order.orderStatus}
+              {order.orderStatus.replace(/_/g, " ")}
             </span>
           </div>
+
+          <OrderTimeline order={order} />
 
           <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
             <div className="surface-panel p-4">
@@ -138,17 +255,19 @@ const OrderDetail = () => {
                     <img
                       src={item.image || "https://placehold.co/100"}
                       alt={item.name}
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-contain"
                     />
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold text-gray-800">{item.name}</p>
                     <p className="text-sm text-gray-500">
-                      Qty: {item.quantity} x Rs. {item.price}
+                      Qty: {item.quantity} x {formatCurrency(item.price)}
                     </p>
                   </div>
                   <p className="text-right font-semibold text-primary">
-                    Rs. {item.quantity * item.price}
+                    {formatCurrency(item.quantity * item.price)}
                   </p>
                 </div>
               ))}
@@ -217,7 +336,7 @@ const OrderDetail = () => {
               <div className="mt-4 space-y-3 text-gray-600">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>Rs. {order.totalAmount}</span>
+                  <span>{formatCurrency(order.totalAmount)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Delivery</span>
@@ -225,7 +344,7 @@ const OrderDetail = () => {
                 </div>
                 <div className="flex justify-between border-t border-gray-100 pt-3 text-lg font-bold text-primary">
                   <span>Total</span>
-                  <span>Rs. {order.totalAmount}</span>
+                  <span>{formatCurrency(order.totalAmount)}</span>
                 </div>
               </div>
             </div>

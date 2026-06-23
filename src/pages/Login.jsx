@@ -2,15 +2,23 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { ArrowLeft, Loader2, Lock, Mail, Phone, User } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 import {
   useLoginUserMutation,
   useRegisterUserMutation,
 } from "../features/api/authApi";
 
-const AuthInput = ({ icon, ...props }) => (
-  <div className="flex items-center gap-3 rounded-xl border border-gray-300 px-4 py-3 shadow-sm transition focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20">
-    <span className="text-gray-400">{icon}</span>
-    <input {...props} className="h-full w-full outline-none" />
+const AuthInput = ({ icon, label, id, ...props }) => (
+  <div className="space-y-1.5">
+    {label && (
+      <label htmlFor={id} className="block text-sm font-medium text-gray-700">
+        {label}
+      </label>
+    )}
+    <div className="flex items-center gap-3 rounded-xl border border-gray-300 px-4 py-3 shadow-sm transition focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20">
+      <span className="text-gray-400" aria-hidden>{icon}</span>
+      <input id={id} {...props} className="h-full w-full outline-none" />
+    </div>
   </div>
 );
 
@@ -24,7 +32,8 @@ const initialForm = {
 const AuthPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const isLoginView = location.pathname !== "/signup";
+  const isLoginView = location.pathname !== "/signup"
+  useDocumentTitle(isLoginView ? "Login" : "Create Account")
   const redirectTo = location.state?.from
     ? `${location.state.from.pathname || ""}${location.state.from.search || ""}`
     : "/";
@@ -50,10 +59,12 @@ const AuthPage = () => {
   ] = useLoginUserMutation();
 
   const [form, setForm] = useState(initialForm);
+  const [phoneError, setPhoneError] = useState("");
   const isSubmitting = loginLoading || registerLoading;
 
   useEffect(() => {
     setForm(initialForm);
+    setPhoneError("");
   }, [location.pathname]);
 
   useEffect(() => {
@@ -87,7 +98,10 @@ const AuthPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    // Strip non-digits from phone input as the user types
+    const sanitized = name === "phone" ? value.replace(/\D/g, "").slice(0, 10) : value;
+    setForm((prev) => ({ ...prev, [name]: sanitized }));
+    if (name === "phone") setPhoneError("");
   };
 
   const handleSubmit = (e) => {
@@ -95,6 +109,12 @@ const AuthPage = () => {
 
     if (isLoginView) {
       loginUser({ email: form.email, password: form.password });
+      return;
+    }
+
+    // Validate Indian mobile number: starts with 6-9, exactly 10 digits
+    if (!/^[6-9]\d{9}$/.test(form.phone)) {
+      setPhoneError("Enter a valid 10-digit Indian mobile number");
       return;
     }
 
@@ -132,10 +152,12 @@ const AuthPage = () => {
           {!isLoginView && (
             <>
               <AuthInput
-                icon={<User className="h-5 w-5" strokeWidth={1.75} aria-hidden />}
+                id="signup-name"
+                label="Full Name"
+                icon={<User className="h-5 w-5" strokeWidth={1.75} />}
                 name="name"
                 type="text"
-                placeholder="Full Name"
+                placeholder="John Doe"
                 autoComplete="name"
                 required
                 value={form.name}
@@ -143,24 +165,32 @@ const AuthPage = () => {
               />
 
               <AuthInput
-                icon={<Phone className="h-5 w-5" strokeWidth={1.75} aria-hidden />}
+                id="signup-phone"
+                label="Phone Number"
+                icon={<Phone className="h-5 w-5" strokeWidth={1.75} />}
                 name="phone"
                 type="tel"
-                placeholder="Phone"
+                placeholder="10-digit mobile number"
                 autoComplete="tel"
-                inputMode="tel"
+                inputMode="numeric"
+                maxLength={10}
                 required
                 value={form.phone}
                 onChange={handleChange}
               />
+              {phoneError && (
+                <p className="-mt-3 text-sm text-red-500">{phoneError}</p>
+              )}
             </>
           )}
 
           <AuthInput
-            icon={<Mail className="h-5 w-5" strokeWidth={1.75} aria-hidden />}
+            id={isLoginView ? "login-email" : "signup-email"}
+            label="Email Address"
+            icon={<Mail className="h-5 w-5" strokeWidth={1.75} />}
             name="email"
             type="email"
-            placeholder="Email"
+            placeholder="you@example.com"
             autoComplete="email"
             required
             value={form.email}
@@ -168,10 +198,12 @@ const AuthPage = () => {
           />
 
           <AuthInput
-            icon={<Lock className="h-5 w-5" strokeWidth={1.75} aria-hidden />}
+            id={isLoginView ? "login-password" : "signup-password"}
+            label="Password"
+            icon={<Lock className="h-5 w-5" strokeWidth={1.75} />}
             name="password"
             type="password"
-            placeholder="Password"
+            placeholder={isLoginView ? "Your password" : "Create a password"}
             autoComplete={isLoginView ? "current-password" : "new-password"}
             required
             value={form.password}

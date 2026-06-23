@@ -4,10 +4,12 @@ import { CircleCheck } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ErrorState from "../components/ErrorState";
 import Loader from "../components/Loader";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 import { useAddToCartMutation } from "../features/api/cartApi";
 import { useGetOrderByIdQuery } from "../features/api/orderApi";
 
 const OrderSuccess = () => {
+  useDocumentTitle("Order Placed")
   const { id } = useParams();
   const navigate = useNavigate();
   const { data, isLoading, error } = useGetOrderByIdQuery(id);

@@ -1,13 +1,11 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { createAuthBaseQuery } from "../../app/baseQueryWithReauth";
 
 const PASSBOOK_API = `${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/payments`;
 
 export const passbookApi = createApi({
     reducerPath: "passbookApi",
-    baseQuery: fetchBaseQuery({ 
-        baseUrl: PASSBOOK_API,
-        credentials: "include",
-    }),
+    baseQuery: createAuthBaseQuery(PASSBOOK_API),
     tagTypes: ["Passbook"],
     endpoints: (builder) => ({
         getMyPassbook: builder.query({
