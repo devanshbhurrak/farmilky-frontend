@@ -11,9 +11,9 @@ const Footer = () => {
   ];
 
   const contactLinks = [
-    { label: "Email", href: "mailto:shyambhurrak@gmail.com", icon: Mail },
-    { label: "Phone", href: "tel:+919424547907", icon: Phone },
-    { label: "WhatsApp", href: "https://wa.me/919424547907", icon: MessageCircle },
+    { label: "Email", href: "mailto:farmilky.official@gmail.com", icon: Mail },
+    { label: "Phone", href: "tel:+9192442 37975", icon: Phone },
+    { label: "WhatsApp", href: "https://wa.me/9192442 37975", icon: MessageCircle },
   ];
 
   return (
@@ -55,18 +55,18 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="tel:+919424547907"
+                  href="tel:+9192442 37975"
                   className="font-medium hover:text-secondary transition-colors"
                 >
-                  +91 9424547907
+                  +91 92442 37975
                 </a>
               </li>
               <li>
                 <a
-                  href="mailto:shyambhurrak@gmail.com"
+                  href="mailto:farmilky.official@gmail.com"
                   className="hover:text-secondary transition-colors"
                 >
-                  shyambhurrak@gmail.com
+                  farmilky.official@gmail.com
                 </a>
               </li>
             </ul>

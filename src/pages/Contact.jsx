@@ -58,10 +58,10 @@ const ContactPage = () => {
                 <h3 className="text-xl font-semibold text-primary">Email Us</h3>
                 <p className="text-gray-600">For support and inquiries:</p>
                 <a
-                  href="mailto:shyambhurrak@gmail.com"
+                  href="mailto:farmilky.official@gmail.com"
                   className="font-medium text-primary hover:text-secondary"
                 >
-                  shyambhurrak@gmail.com
+                  farmilky.official@gmail.com
                 </a>
               </div>
             </div>
@@ -74,10 +74,10 @@ const ContactPage = () => {
                 <h3 className="text-xl font-semibold text-primary">Call Us</h3>
                 <p className="text-gray-600">Anytime</p>
                 <a
-                  href="tel:+919424547907"
+                  href="tel:+9192442 37975"
                   className="font-medium text-primary hover:text-secondary"
                 >
-                  +91 9424547907
+                  +91 92442 37975
                 </a>
               </div>
             </div>
@@ -90,12 +90,12 @@ const ContactPage = () => {
                 <h3 className="text-xl font-semibold text-primary">WhatsApp Us</h3>
                 <p className="text-gray-600">Chat with us directly:</p>
                 <a
-                  href="https://wa.me/919424547907"
+                  href="https://wa.me/9192442 37975"
                   className="font-medium text-primary transition-colors hover:text-secondary"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  +91 9424547907
+                  +91 92442 37975
                 </a>
               </div>
             </div>
