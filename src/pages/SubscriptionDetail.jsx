@@ -286,8 +286,8 @@ const SubscriptionDetail = () => {
             {[
               { label: "Quantity", value: `${subscription.quantityPerDay} ${subscription.productId.unit}` },
               { label: "Schedule", value: subscription.deliverySchedule === "alternate" ? "Alternate Days" : subscription.deliverySchedule.charAt(0).toUpperCase() + subscription.deliverySchedule.slice(1) },
+              { label: `Rate / ${subscription.productId.unit}`, value: formatCurrency(subscription.pricePerUnit ?? (subscription.totalPricePerDay / subscription.quantityPerDay)) },
               { label: "Daily Cost", value: formatCurrency(subscription.totalPricePerDay) },
-              { label: "Balance", value: formatCurrency(passbookData?.user?.accountBalance || 0), red: (passbookData?.user?.accountBalance || 0) > 0 },
             ].map((item) => (
               <div key={item.label} className="surface-panel p-4">
                 <p className="text-xs text-gray-500">{item.label}</p>
