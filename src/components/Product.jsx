@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ShoppingCart } from "lucide-react";
 import toast from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -25,7 +25,31 @@ const Product = ({ product }) => {
   const [removeFromCart] = useRemoveFromCartMutation();
   const isSubscriptionFriendly = product.category === "milk";
 
-  const cartItem = cart?.items?.find((item) => item.productId._id === product._id);
+  const hasVariants = product.variants?.length > 0;
+  const [selectedVariantId, setSelectedVariantId] = useState(null);
+
+  useEffect(() => {
+    if (hasVariants) {
+      const def = product.variants.find(v => v.isDefault) || product.variants[0];
+      setSelectedVariantId(String(def._id));
+    } else {
+      setSelectedVariantId(null);
+    }
+  }, [product._id, hasVariants]);
+
+  const selectedVariant = (hasVariants && selectedVariantId)
+    ? (product.variants.find(v => String(v._id) === selectedVariantId) ?? null)
+    : null;
+  const effectivePrice = selectedVariant
+    ? (selectedVariant.discountedPrice ?? selectedVariant.price)
+    : product.price;
+  const displayLabel = selectedVariant ? selectedVariant.label : product.unit;
+
+  const cartItem = cart?.items?.find(
+    (item) =>
+      String(item.productId?._id || item.productId) === String(product._id) &&
+      String(item.variantId ?? null) === String(selectedVariantId ?? null)
+  );
   const quantity = cartItem?.quantity || 0;
 
   const handleAdd = async () => {
@@ -45,6 +69,7 @@ const Product = ({ product }) => {
       await addToCart({
         productId: product._id,
         quantity: 1,
+        variantId: selectedVariantId,
         _product: product,
       }).unwrap();
       toast.success("Added to cart");
@@ -57,18 +82,20 @@ const Product = ({ product }) => {
     await updateCartItem({
       productId: product._id,
       quantity: quantity + 1,
+      variantId: selectedVariantId,
     });
   };
 
   const handleDecrease = async () => {
     if (quantity === 1) {
-      await removeFromCart({ productId: product._id });
+      await removeFromCart({ productId: product._id, variantId: selectedVariantId });
       return;
     }
 
     await updateCartItem({
       productId: product._id,
       quantity: quantity - 1,
+      variantId: selectedVariantId,
     });
   };
 
@@ -98,9 +125,39 @@ const Product = ({ product }) => {
         </Link>
 
         <p className="mt-2 text-xl font-semibold text-secondary">
-          {formatCurrency(product.price)}{" "}
-          <span className="text-base text-gray-600">{product.unit}</span>
+          {formatCurrency(effectivePrice)}{" "}
+          <span className="text-base text-gray-600">{displayLabel}</span>
+          {selectedVariant?.discountedPrice != null && selectedVariant.discountedPrice < selectedVariant.price && (
+            <span className="text-xs text-gray-400 line-through ml-1">
+              {formatCurrency(selectedVariant.price)}
+            </span>
+          )}
         </p>
+
+        {hasVariants && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {product.variants.map(v => (
+              <button
+                key={v._id}
+                type="button"
+                onClick={() => setSelectedVariantId(String(v._id))}
+                disabled={!v.isAvailable}
+                className={`rounded-full border px-2.5 py-0.5 text-xs font-medium transition
+                  ${String(v._id) === selectedVariantId
+                    ? 'border-secondary bg-secondary text-white'
+                    : v.isAvailable
+                      ? 'border-gray-300 text-gray-700 hover:border-secondary'
+                      : 'cursor-not-allowed border-gray-200 text-gray-300'
+                  }`}
+              >
+                {v.label}
+                {v.discountedPrice != null && v.discountedPrice < v.price && (
+                  <span className="ml-1 opacity-80">{Math.round((1 - v.discountedPrice / v.price) * 100)}%</span>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
 
         <p className="mt-2 text-sm text-gray-500">
           {isSubscriptionFriendly
@@ -143,7 +200,7 @@ const Product = ({ product }) => {
 
         {isSubscriptionFriendly && (
           <Link
-            to={`/subscribe?productId=${product._id}&quantity=${Math.max(quantity, 1)}`}
+            to={`/subscribe?productId=${product._id}&quantity=${Math.max(quantity, 1)}${selectedVariantId ? `&variantId=${selectedVariantId}` : ''}`}
             className="mt-3 flex min-h-11 items-center justify-center rounded-2xl border border-primary/15 px-5 py-2 font-semibold text-primary transition hover:bg-primary/5"
           >
             Subscribe Instead

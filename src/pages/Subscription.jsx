@@ -45,6 +45,8 @@ const Subscription = () => {
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
   }, [searchParams]);
 
+  const variantId = searchParams.get("variantId");
+
   const { data: product, isLoading } = useGetProductByIdQuery(productId, { skip: !productId });
   const [createSubscription, { isLoading: creating }] = useCreateSubscriptionMutation();
 
@@ -52,9 +54,16 @@ const Subscription = () => {
   const [schedule, setSchedule] = useState("daily");
   const [startDate, setStartDate] = useState(todayStr());
 
+  const selectedVariant = variantId && product?.variants?.length > 0
+    ? product.variants.find(v => String(v._id) === variantId)
+    : null;
+  const effectivePrice = selectedVariant
+    ? (selectedVariant.discountedPrice ?? selectedVariant.price)
+    : (product?.price ?? 0);
+
   const selectedSchedule = SCHEDULES.find((s) => s.value === schedule);
   const estimatedDeliveries = selectedSchedule?.deliveries ?? 30;
-  const estimatedMonthlyCost = product ? product.price * quantity * estimatedDeliveries : 0;
+  const estimatedMonthlyCost = product ? effectivePrice * quantity * estimatedDeliveries : 0;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,6 +74,7 @@ const Subscription = () => {
         quantity: Number(quantity),
         deliverySchedule: schedule,
       };
+      if (variantId) payload.variantId = variantId;
       if (startDate && startDate !== todayStr()) {
         payload.startDate = startDate;
       }
@@ -121,9 +131,15 @@ const Subscription = () => {
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold text-gray-900">{product.name}</h2>
                 <div className="inline-block rounded-full bg-[#F7F3ED] px-4 py-1.5">
-                  <span className="text-2xl font-bold text-primary">{formatCurrency(product.price)}</span>
-                  <span className="ml-1 font-medium text-gray-500">/ {product.unit}</span>
+                  <span className="text-2xl font-bold text-primary">{formatCurrency(effectivePrice)}</span>
+                  <span className="ml-1 font-medium text-gray-500">/ {selectedVariant ? selectedVariant.label : product.unit}</span>
+                  {selectedVariant?.discountedPrice != null && selectedVariant.discountedPrice < selectedVariant.price && (
+                    <span className="ml-2 text-sm text-gray-400 line-through">{formatCurrency(selectedVariant.price)}</span>
+                  )}
                 </div>
+                {selectedVariant && (
+                  <p className="text-sm text-gray-500">Selected: {selectedVariant.label}</p>
+                )}
               </div>
             </div>
           </div>

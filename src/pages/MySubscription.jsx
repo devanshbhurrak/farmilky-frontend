@@ -102,7 +102,7 @@ const MySubscriptions = () => {
                   </h2>
                   <p className="font-medium text-primary">
                     {formatCurrency(sub.pricePerUnit ?? (sub.totalPricePerDay / sub.quantityPerDay))}
-                    <span className="text-sm text-gray-400"> / {sub.productId.unit}</span>
+                    <span className="text-sm text-gray-400"> / {sub.variantUnit || sub.productId.unit}</span>
                   </p>
                 </div>
               </div>
@@ -113,7 +113,7 @@ const MySubscriptions = () => {
                     Quantity
                   </span>
                   <span className="font-semibold text-gray-800">
-                    {sub.quantityPerDay} {sub.productId.unit}
+                    {sub.quantityPerDay} {sub.variantUnit || sub.productId.unit}
                   </span>
                 </div>
                 <div>

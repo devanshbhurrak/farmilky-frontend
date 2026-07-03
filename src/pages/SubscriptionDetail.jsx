@@ -284,9 +284,9 @@ const SubscriptionDetail = () => {
 
           <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
             {[
-              { label: "Quantity", value: `${subscription.quantityPerDay} ${subscription.productId.unit}` },
+              { label: "Quantity", value: `${subscription.quantityPerDay} ${subscription.variantUnit || subscription.productId.unit}` },
               { label: "Schedule", value: subscription.deliverySchedule === "alternate" ? "Alternate Days" : subscription.deliverySchedule.charAt(0).toUpperCase() + subscription.deliverySchedule.slice(1) },
-              { label: `Rate / ${subscription.productId.unit}`, value: formatCurrency(subscription.pricePerUnit ?? (subscription.totalPricePerDay / subscription.quantityPerDay)) },
+              { label: `Rate / ${subscription.variantUnit || subscription.productId.unit}`, value: formatCurrency(subscription.pricePerUnit ?? (subscription.totalPricePerDay / subscription.quantityPerDay)) },
               { label: "Daily Cost", value: formatCurrency(subscription.totalPricePerDay) },
             ].map((item) => (
               <div key={item.label} className="surface-panel p-4">
@@ -358,11 +358,11 @@ const SubscriptionDetail = () => {
                       : "Delivery expected today"}
                   </p>
                   {todayHistoryEntry?.status === "delivered" && todayHistoryEntry?.actualQuantity && (
-                    <p className="text-sm text-green-700">{todayHistoryEntry.actualQuantity} {subscription.productId.unit} delivered</p>
+                    <p className="text-sm text-green-700">{todayHistoryEntry.actualQuantity} {subscription.variantUnit || subscription.productId.unit} delivered</p>
                   )}
                   {todayHistoryEntry?.reason && <p className="text-sm text-red-600">{todayHistoryEntry.reason}</p>}
                   {!todayHistoryEntry && isDeliveryToday && (
-                    <p className="text-sm text-blue-600">{subscription.quantityPerDay} {subscription.productId.unit} scheduled</p>
+                    <p className="text-sm text-blue-600">{subscription.quantityPerDay} {subscription.variantUnit || subscription.productId.unit} scheduled</p>
                   )}
                 </div>
               </div>

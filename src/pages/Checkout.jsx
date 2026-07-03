@@ -46,10 +46,13 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("COD");
 
   const cartItems = cartData?.items || [];
-  const totalAmount = cartItems.reduce(
-    (acc, item) => acc + item.productId.price * item.quantity,
-    0
-  );
+  const totalAmount = cartItems.reduce((acc, item) => {
+    const variant = item.variantId && item.productId?.variants?.length > 0
+      ? item.productId.variants.find(v => String(v._id) === String(item.variantId))
+      : null;
+    const price = variant ? (variant.discountedPrice ?? variant.price) : item.productId?.price ?? 0;
+    return acc + price * item.quantity;
+  }, 0);
 
   useEffect(() => {
     if (
@@ -386,10 +389,14 @@ const Checkout = () => {
           <div className="custom-scrollbar mb-6 max-h-80 space-y-4 overflow-y-auto pr-2">
             {cartItems.map((item) => {
               if (!item.productId) return null;
+              const variant = item.variantId && item.productId?.variants?.length > 0
+                ? item.productId.variants.find(v => String(v._id) === String(item.variantId))
+                : null;
+              const price = variant ? (variant.discountedPrice ?? variant.price) : item.productId?.price ?? 0;
 
               return (
                 <div
-                  key={item.productId._id}
+                  key={`${item.productId._id}-${item.variantId ?? 'base'}`}
                   className="flex items-center gap-3 border-b border-gray-100 pb-4 last:border-0 last:pb-0 sm:gap-4"
                 >
                   <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 p-2 sm:h-16 sm:w-16">
@@ -405,10 +412,15 @@ const Checkout = () => {
                     <h4 className="truncate font-semibold text-gray-800">
                       {item.productId.name}
                     </h4>
+                    {item.variantLabel && (
+                      <span className="inline-block rounded-full bg-secondary/10 px-2 py-0.5 text-xs font-medium text-secondary">
+                        {item.variantLabel}
+                      </span>
+                    )}
                     <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
                   </div>
                   <p className="text-right font-semibold">
-                    {formatCurrency(item.productId.price * item.quantity)}
+                    {formatCurrency(price * item.quantity)}
                   </p>
                 </div>
               );

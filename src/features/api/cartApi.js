@@ -27,10 +27,25 @@ export const cartApi = createApi({
                 const patchResult = dispatch(
                     cartApi.util.updateQueryData('getCart', undefined, (draft) => {
                         if (draft && draft.items && arg._product) {
-                            draft.items.push({
-                                productId: arg._product,
-                                quantity: arg.quantity || 1
-                            });
+                            const resolvedVariantId = arg.variantId ?? null;
+                            // Check if same product+variant already in cart
+                            const existing = draft.items.find(i =>
+                                (i.productId?._id || i.productId) === arg._product._id &&
+                                String(i.variantId ?? null) === String(resolvedVariantId)
+                            );
+                            if (existing) {
+                                existing.quantity += arg.quantity || 1;
+                            } else {
+                                const variantLabel = resolvedVariantId && arg._product.variants?.length > 0
+                                    ? (arg._product.variants.find(v => String(v._id) === String(resolvedVariantId))?.label ?? null)
+                                    : null;
+                                draft.items.push({
+                                    productId: arg._product,
+                                    quantity: arg.quantity || 1,
+                                    variantId: resolvedVariantId,
+                                    variantLabel,
+                                });
+                            }
                         }
                     })
                 );
@@ -42,19 +57,31 @@ export const cartApi = createApi({
             },
             invalidatesTags: ['Cart']
         }),
+
         updateCartItem: builder.mutation({
             query: (data) => ({
                 url: "/update",
                 method: 'PUT',
                 body: data,
             }),
-            async onQueryStarted({ productId, quantity }, { dispatch, queryFulfilled }) {
+            async onQueryStarted({ productId, quantity, variantId }, { dispatch, queryFulfilled }) {
                 const patchResult = dispatch(
                     cartApi.util.updateQueryData('getCart', undefined, (draft) => {
                         if (draft && draft.items) {
-                            const item = draft.items.find(i => i.productId._id === productId);
+                            const normalizedVariantId = variantId ?? null;
+                            const item = draft.items.find(i =>
+                                (i.productId?._id || i.productId) === productId &&
+                                String(i.variantId ?? null) === String(normalizedVariantId)
+                            );
                             if (item) {
-                                item.quantity = quantity;
+                                if (quantity <= 0) {
+                                    draft.items = draft.items.filter(i =>
+                                        !((i.productId?._id || i.productId) === productId &&
+                                          String(i.variantId ?? null) === String(normalizedVariantId))
+                                    );
+                                } else {
+                                    item.quantity = quantity;
+                                }
                             }
                         }
                     })
@@ -67,17 +94,22 @@ export const cartApi = createApi({
             },
             invalidatesTags: ["Cart"]
         }),
+
         removeFromCart: builder.mutation({
             query: (data) => ({
                 url: '/remove',
                 method: 'DELETE',
                 body: data,
             }),
-            async onQueryStarted({ productId }, { dispatch, queryFulfilled }) {
+            async onQueryStarted({ productId, variantId }, { dispatch, queryFulfilled }) {
                 const patchResult = dispatch(
                     cartApi.util.updateQueryData('getCart', undefined, (draft) => {
                         if (draft && draft.items) {
-                            draft.items = draft.items.filter(i => i.productId._id !== productId);
+                            const normalizedVariantId = variantId ?? null;
+                            draft.items = draft.items.filter(i =>
+                                !((i.productId?._id || i.productId) === productId &&
+                                  String(i.variantId ?? null) === String(normalizedVariantId))
+                            );
                         }
                     })
                 );
@@ -89,6 +121,7 @@ export const cartApi = createApi({
             },
             invalidatesTags: ['Cart']
         }),
+
         clearCart: builder.mutation({
             query: () => ({
                 url: '/clear',

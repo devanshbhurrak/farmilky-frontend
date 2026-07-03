@@ -3,9 +3,16 @@ import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatCurrency } from "../utils/formatCurrency";
 
-const CartItem = ({ item, onQuantityChange, onRemove }) => {
+const CartItem = ({ item, onQuantityChange, onRemove, variantId }) => {
   const navigate = useNavigate();
   const product = item.productId;
+
+  const variant = item.variantId && product?.variants?.length > 0
+    ? product.variants.find(v => String(v._id) === String(item.variantId))
+    : null;
+  const effectivePrice = variant
+    ? (variant.discountedPrice ?? variant.price)
+    : product?.price ?? 0;
 
   return (
     <article className="group relative rounded-[28px] border border-[#EDE6DC] bg-[#FFFEFC] p-5 transition-all duration-300 hover:border-secondary/40 hover:bg-[#FFFDF9] sm:p-7">
@@ -27,9 +34,14 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
             <h3 className="text-xl font-semibold leading-tight text-primary sm:text-[22px]">
               {product.name}
             </h3>
+            {item.variantLabel && (
+              <span className="mt-1 inline-block rounded-full bg-secondary/10 px-2 py-0.5 text-xs font-medium text-secondary">
+                {item.variantLabel}
+              </span>
+            )}
             <p className="mt-1 text-sm text-gray-600">
-              {formatCurrency(product.price)}
-              <span className="text-gray-400"> / {product.unit}</span>
+              {formatCurrency(effectivePrice)}
+              <span className="text-gray-400"> / {variant ? variant.unit : product.unit}</span>
             </p>
           </div>
 
@@ -39,8 +51,8 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
                 <button
                   onClick={() =>
                     item.quantity === 1
-                      ? onRemove(product._id)
-                      : onQuantityChange(product._id, item.quantity - 1)
+                      ? onRemove(product._id, item.variantId)
+                      : onQuantityChange(product._id, item.quantity - 1, item.variantId)
                   }
                   className="flex h-8 w-8 items-center justify-center rounded-full text-lg text-primary transition hover:bg-white"
                   aria-label={`Decrease quantity of ${product.name}`}
@@ -53,7 +65,7 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
                 </span>
 
                 <button
-                  onClick={() => onQuantityChange(product._id, item.quantity + 1)}
+                  onClick={() => onQuantityChange(product._id, item.quantity + 1, item.variantId)}
                   className="flex h-8 w-8 items-center justify-center rounded-full text-lg text-primary transition hover:bg-white"
                   aria-label={`Increase quantity of ${product.name}`}
                 >
@@ -62,7 +74,7 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
               </div>
 
               <button
-                onClick={() => onRemove(product._id)}
+                onClick={() => onRemove(product._id, item.variantId)}
                 className="flex items-center gap-2 text-sm text-gray-500 transition hover:text-red-500"
               >
                 <Trash2 className="h-4 w-4" strokeWidth={1.75} aria-hidden />
@@ -72,7 +84,7 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
 
             {product.category === "milk" && (
               <button
-                onClick={() => navigate(`/subscribe?productId=${product._id}`)}
+                onClick={() => navigate(`/subscribe?productId=${product._id}${item.variantId ? `&variantId=${item.variantId}` : ''}`)}
                 className="self-start text-left text-sm font-medium text-secondary underline-offset-4 hover:underline"
               >
                 Make this a daily subscription
@@ -83,7 +95,7 @@ const CartItem = ({ item, onQuantityChange, onRemove }) => {
 
         <div className="flex items-center justify-between sm:flex-col sm:items-end">
           <p className="text-lg font-semibold text-primary sm:text-xl">
-            {formatCurrency(item.quantity * product.price)}
+            {formatCurrency(item.quantity * effectivePrice)}
           </p>
         </div>
       </div>

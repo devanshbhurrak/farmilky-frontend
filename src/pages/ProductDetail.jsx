@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowLeft, ShoppingCart, Tag } from "lucide-react";
 import toast from "react-hot-toast";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -61,7 +61,6 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
-  // getProductById returns the product directly (no wrapper)
   const { data: product, isLoading, error } = useGetProductByIdQuery(id);
 
   useDocumentTitle(product?.name ?? "Product");
@@ -71,7 +70,31 @@ const ProductDetail = () => {
   const [updateCartItem] = useUpdateCartItemMutation();
   const [removeFromCart] = useRemoveFromCartMutation();
 
-  const cartItem = cart?.items?.find((item) => item.productId._id === id);
+  const hasVariants = product?.variants?.length > 0;
+  const [selectedVariantId, setSelectedVariantId] = useState(null);
+
+  useEffect(() => {
+    if (hasVariants) {
+      const def = product.variants.find(v => v.isDefault) || product.variants[0];
+      setSelectedVariantId(String(def._id));
+    } else {
+      setSelectedVariantId(null);
+    }
+  }, [product?._id, hasVariants]);
+
+  const selectedVariant = (hasVariants && selectedVariantId)
+    ? (product.variants.find(v => String(v._id) === selectedVariantId) ?? null)
+    : null;
+  const effectivePrice = selectedVariant
+    ? (selectedVariant.discountedPrice ?? selectedVariant.price)
+    : product?.price ?? 0;
+  const displayLabel = selectedVariant ? selectedVariant.label : product?.unit;
+
+  const cartItem = cart?.items?.find(
+    (item) =>
+      String(item.productId?._id || item.productId) === String(id) &&
+      String(item.variantId ?? null) === String(selectedVariantId ?? null)
+  );
   const quantity = cartItem?.quantity ?? 0;
 
   const isSubscriptionFriendly = product?.category === "milk";
@@ -82,7 +105,7 @@ const ProductDetail = () => {
       return;
     }
     try {
-      await addToCart({ productId: id, quantity: 1, _product: product }).unwrap();
+      await addToCart({ productId: id, quantity: 1, variantId: selectedVariantId, _product: product }).unwrap();
       toast.success("Added to cart");
     } catch (err) {
       toast.error(err?.data?.message || "Failed to add to cart");
@@ -90,14 +113,14 @@ const ProductDetail = () => {
   };
 
   const handleIncrease = async () => {
-    await updateCartItem({ productId: id, quantity: quantity + 1 });
+    await updateCartItem({ productId: id, quantity: quantity + 1, variantId: selectedVariantId });
   };
 
   const handleDecrease = async () => {
     if (quantity === 1) {
-      await removeFromCart({ productId: id });
+      await removeFromCart({ productId: id, variantId: selectedVariantId });
     } else {
-      await updateCartItem({ productId: id, quantity: quantity - 1 });
+      await updateCartItem({ productId: id, quantity: quantity - 1, variantId: selectedVariantId });
     }
   };
 
@@ -173,12 +196,43 @@ const ProductDetail = () => {
               {product.name}
             </h1>
 
-            <div className="flex items-baseline gap-2">
+            <div className="flex items-baseline gap-2 flex-wrap">
               <span className="text-3xl font-bold text-secondary">
-                {formatCurrency(product.price)}
+                {formatCurrency(effectivePrice)}
               </span>
-              <span className="text-base text-gray-500">/ {product.unit}</span>
+              <span className="text-base text-gray-500">/ {displayLabel}</span>
+              {selectedVariant?.discountedPrice != null && selectedVariant.discountedPrice < selectedVariant.price && (
+                <span className="text-base text-gray-400 line-through">
+                  {formatCurrency(selectedVariant.price)}
+                </span>
+              )}
             </div>
+
+            {/* Variant selector */}
+            {hasVariants && (
+              <div className="flex flex-wrap gap-2">
+                {product.variants.map(v => (
+                  <button
+                    key={v._id}
+                    type="button"
+                    onClick={() => setSelectedVariantId(String(v._id))}
+                    disabled={!v.isAvailable}
+                    className={`rounded-full border px-3 py-1 text-sm font-medium transition
+                      ${String(v._id) === selectedVariantId
+                        ? 'border-secondary bg-secondary text-white'
+                        : v.isAvailable
+                          ? 'border-gray-300 text-gray-700 hover:border-secondary'
+                          : 'cursor-not-allowed border-gray-200 text-gray-300'
+                      }`}
+                  >
+                    {v.label}
+                    {v.discountedPrice != null && v.discountedPrice < v.price && (
+                      <span className="ml-1 opacity-80">{Math.round((1 - v.discountedPrice / v.price) * 100)}% off</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {product.fatContent && (
               <p className="text-sm text-gray-500">
@@ -225,7 +279,7 @@ const ProductDetail = () => {
                     </button>
                   </div>
                   <p className="text-sm text-gray-500">
-                    {formatCurrency(quantity * product.price)} in cart
+                    {formatCurrency(quantity * effectivePrice)} in cart
                   </p>
                 </div>
               )}
@@ -233,7 +287,7 @@ const ProductDetail = () => {
 
             {isSubscriptionFriendly && (
               <Link
-                to={`/subscribe?productId=${product._id}&quantity=${Math.max(quantity, 1)}`}
+                to={`/subscribe?productId=${product._id}&quantity=${Math.max(quantity, 1)}${selectedVariantId ? `&variantId=${selectedVariantId}` : ''}`}
                 className="flex min-h-11 w-full items-center justify-center rounded-2xl border border-primary/15 px-5 py-2.5 font-semibold text-primary transition hover:bg-primary/5 sm:w-auto"
               >
                 Subscribe for Daily Delivery

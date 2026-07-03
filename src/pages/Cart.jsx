@@ -100,24 +100,27 @@ const Cart = () => {
   }
 
   const items = data?.items || [];
-  const totalAmount = items.reduce(
-    (sum, item) => sum + item.quantity * item.productId.price,
-    0
-  );
+  const totalAmount = items.reduce((sum, item) => {
+    const variant = item.variantId && item.productId?.variants?.length > 0
+      ? item.productId.variants.find(v => String(v._id) === String(item.variantId))
+      : null;
+    const price = variant ? (variant.discountedPrice ?? variant.price) : item.productId?.price ?? 0;
+    return sum + item.quantity * price;
+  }, 0);
   const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  const handleQuantityChange = async (productId, quantity) => {
+  const handleQuantityChange = async (productId, quantity, variantId) => {
     if (quantity < 1) return;
     try {
-      await updateCartItem({ productId, quantity }).unwrap();
+      await updateCartItem({ productId, quantity, variantId }).unwrap();
     } catch {
       toast.error("Failed to update quantity");
     }
   };
 
-  const handleRemove = async (productId) => {
+  const handleRemove = async (productId, variantId) => {
     try {
-      await removeFromCart({ productId }).unwrap();
+      await removeFromCart({ productId, variantId }).unwrap();
       toast.success("Item removed");
     } catch {
       toast.error("Failed to remove item");
@@ -160,8 +163,9 @@ const Cart = () => {
             <div className="space-y-5 lg:col-span-2 lg:space-y-6">
               {items.map((item) => (
                 <CartItem
-                  key={item.productId._id}
+                  key={`${item.productId._id}-${item.variantId ?? 'base'}`}
                   item={item}
+                  variantId={item.variantId}
                   onQuantityChange={handleQuantityChange}
                   onRemove={handleRemove}
                 />

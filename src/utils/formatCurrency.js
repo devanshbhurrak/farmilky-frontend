@@ -4,4 +4,4 @@
  *
  * Usage: formatCurrency(120) → "₹120"
  */
-export const formatCurrency = (amount) => `₹${amount}`;
+export const formatCurrency = (amount) => `₹${(Number(amount) || 0).toFixed(2)}`;
