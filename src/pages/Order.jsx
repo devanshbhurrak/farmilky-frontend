@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import Product from "../components/Product";
 import ProductSkeleton from "../components/ProductSkeleton";
@@ -7,6 +7,7 @@ import { useGetAllProductsQuery } from "../features/api/productApi";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 
 const filters = ["All", "Milk", "Dairy"];
+const DAIRY_CATEGORIES = ["paneer", "ghee", "curd", "butter", "cheese"];
 
 const OrderNowPage = () => {
   useDocumentTitle("Our Products")
@@ -14,23 +15,27 @@ const OrderNowPage = () => {
   const [search, setSearch] = useState("");
   const { data, isLoading, error, refetch } = useGetAllProductsQuery();
   const products = data?.products || [];
-  const milkCount = products.filter((product) => product.category === "milk").length;
-  const dairyCount = products.filter((product) =>
-    ["paneer", "ghee", "curd", "butter", "cheese"].includes(product.category)
-  ).length;
 
-  const searchTerm = search.trim().toLowerCase();
-  const filteredProducts = products.filter((product) => {
-    const matchesCategory =
-      filter === "All" ||
-      (filter === "Milk" && product.category === "milk") ||
-      (filter === "Dairy" && ["paneer", "ghee", "curd", "butter", "cheese"].includes(product.category));
-    const matchesSearch =
-      !searchTerm ||
-      product.name.toLowerCase().includes(searchTerm) ||
-      product.category.toLowerCase().includes(searchTerm);
-    return matchesCategory && matchesSearch;
-  });
+  const { milkCount, dairyCount, filteredProducts } = useMemo(() => {
+    const searchTerm = search.trim().toLowerCase();
+    let milk = 0;
+    let dairy = 0;
+    const filtered = products.filter((product) => {
+      if (product.category === "milk") milk++;
+      else if (DAIRY_CATEGORIES.includes(product.category)) dairy++;
+
+      const matchesCategory =
+        filter === "All" ||
+        (filter === "Milk" && product.category === "milk") ||
+        (filter === "Dairy" && DAIRY_CATEGORIES.includes(product.category));
+      const matchesSearch =
+        !searchTerm ||
+        product.name.toLowerCase().includes(searchTerm) ||
+        product.category.toLowerCase().includes(searchTerm);
+      return matchesCategory && matchesSearch;
+    });
+    return { milkCount: milk, dairyCount: dairy, filteredProducts: filtered };
+  }, [products, filter, search]);
 
   return (
     <>
@@ -69,10 +74,11 @@ const OrderNowPage = () => {
               <button
                 key={option}
                 onClick={() => setFilter(option)}
-                className={`min-h-11 rounded-2xl px-5 py-2 font-semibold transition-colors sm:px-6 ${
+                aria-pressed={filter === option}
+                className={`min-h-11 rounded-2xl px-5 py-2 font-semibold transition-all duration-200 sm:px-6 ${
                   filter === option
-                    ? "bg-secondary text-white"
-                    : "bg-gray-200 text-primary"
+                    ? "bg-secondary text-white shadow-sm"
+                    : "bg-gray-200 text-primary hover:bg-gray-300"
                 }`}
               >
                 {option}
@@ -101,7 +107,7 @@ const OrderNowPage = () => {
             <div className="surface-panel mt-10 p-8 text-center text-gray-600">
               <p className="text-lg font-semibold text-primary">No products found</p>
               <p className="mt-2">
-                {searchTerm
+                {search.trim()
                   ? <>No results for "<strong>{search}</strong>". Try a different keyword or clear the search.</>
                   : <>Try switching back to <strong>All</strong> to browse everything currently available.</>
                 }

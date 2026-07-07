@@ -30,7 +30,7 @@ const EmptyState = ({
         {actionLabel && actionTo ? (
           <Link
             to={actionTo}
-            className="mt-8 inline-flex rounded-xl bg-secondary px-8 py-3 font-semibold text-white transition hover:bg-secondary/90"
+            className="mt-8 inline-flex min-h-12 items-center rounded-xl bg-secondary px-8 py-3 font-semibold text-white transition hover:bg-secondary/90"
           >
             {actionLabel}
           </Link>

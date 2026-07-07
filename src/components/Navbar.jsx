@@ -77,13 +77,17 @@ const Navbar = () => {
                 <NavLink
                   to={link.path}
                   className={({ isActive }) =>
-                    `relative group cursor-pointer hover:text-accent transition-colors duration-300 ${
-                      isActive ? "text-accent" : ""
+                    `relative group cursor-pointer transition-colors duration-300 ${
+                      isActive ? "text-accent" : "hover:text-accent"
                     }`
                   }
                 >
-                  {link.text}
-                  <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-accent group-hover:w-full transition-all duration-300"></span>
+                  {({ isActive }) => (
+                    <>
+                      {link.text}
+                      <span className={`absolute left-0 -bottom-1 h-[2px] bg-accent transition-all duration-300 ${isActive ? "w-full" : "w-0 group-hover:w-full"}`} />
+                    </>
+                  )}
                 </NavLink>
               </li>
             ))}
@@ -101,7 +105,7 @@ const Navbar = () => {
               <div className="relative hidden md:block" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen((v) => !v)}
-                  aria-haspopup="true"
+                  aria-haspopup="menu"
                   aria-expanded={dropdownOpen}
                   aria-controls="user-dropdown-menu"
                   className="flex items-center gap-2 py-2 font-semibold transition-colors hover:text-secondary"
@@ -123,12 +127,15 @@ const Navbar = () => {
                   </svg>
                 </button>
 
-                {dropdownOpen && (
-                  <div
-                    id="user-dropdown-menu"
-                    role="menu"
-                    className="absolute right-0 top-full z-50 mt-2 w-48"
-                  >
+                <div
+                  id="user-dropdown-menu"
+                  role="menu"
+                  className={`absolute right-0 top-full z-50 mt-2 w-48 transition-all duration-200 ${
+                    dropdownOpen
+                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                  }`}
+                >
                     <div className="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white py-2 text-gray-800 shadow-xl">
                       <Link
                         to="/profile"
@@ -174,7 +181,6 @@ const Navbar = () => {
                       </button>
                     </div>
                   </div>
-                )}
               </div>
             )}
 
@@ -197,7 +203,7 @@ const Navbar = () => {
       </nav>
 
       {menuOpen && (
-        <div className="fixed inset-0 z-40 bg-primary/45 backdrop-blur-sm md:hidden">
+        <div className="fixed inset-0 z-40 bg-primary/45 backdrop-blur-sm md:hidden" aria-modal="true" role="dialog" aria-label="Navigation menu">
           <div className="mx-4 mt-24 rounded-3xl border border-white/10 bg-primary text-[#F9F5F0] shadow-2xl">
             <ul className="flex flex-col gap-1 p-4 text-base font-semibold">
               {menuLinks.map((link) => (

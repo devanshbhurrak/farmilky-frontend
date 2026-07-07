@@ -4,6 +4,7 @@ import { ArrowLeft, FileText, IndianRupee, History } from "lucide-react";
 import Loader from "../components/Loader";
 import Pagination from "../components/Pagination";
 import useDocumentTitle from "../hooks/useDocumentTitle";
+import { formatCurrency } from "../utils/formatCurrency";
 import { useGetMyPassbookQuery } from "../features/api/passbookApi";
 
 const PAGE_SIZE = 10;
@@ -84,39 +85,40 @@ const Passbook = () => {
 
             {ledgerEntries.length > 0 ? (
               <>
+              <p className="mb-2 text-right text-xs text-gray-400 sm:hidden">← Scroll to see more →</p>
               <div className="overflow-x-auto -mx-6 sm:mx-0">
-                <table className="w-full text-left text-sm border-separate border-spacing-0">
+                <table className="w-full min-w-[480px] text-left text-sm border-separate border-spacing-0">
                   <thead>
                     <tr className="bg-gray-50/50">
-                      <th className="px-6 py-4 font-bold text-gray-500 uppercase tracking-wider text-[10px] border-y border-gray-100 rounded-tl-2xl">Date</th>
-                      <th className="px-6 py-4 font-bold text-gray-500 uppercase tracking-wider text-[10px] border-y border-gray-100">Description</th>
-                      <th className="px-6 py-4 font-bold text-gray-500 uppercase tracking-wider text-[10px] border-y border-gray-100 text-right">Debit (-)</th>
-                      <th className="px-6 py-4 font-bold text-gray-500 uppercase tracking-wider text-[10px] border-y border-gray-100 text-right rounded-tr-2xl">Credit (+)</th>
+                      <th className="px-4 sm:px-6 py-4 font-bold text-gray-500 uppercase tracking-wider text-xs border-y border-gray-100 rounded-tl-2xl">Date</th>
+                      <th className="px-4 sm:px-6 py-4 font-bold text-gray-500 uppercase tracking-wider text-xs border-y border-gray-100">Description</th>
+                      <th className="px-4 sm:px-6 py-4 font-bold text-gray-500 uppercase tracking-wider text-xs border-y border-gray-100 text-right">Debit (-)</th>
+                      <th className="px-4 sm:px-6 py-4 font-bold text-gray-500 uppercase tracking-wider text-xs border-y border-gray-100 text-right rounded-tr-2xl">Credit (+)</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
                     {paginatedEntries.map((entry) => (
                       <tr key={`${entry.date}-${entry.description}`} className="group hover:bg-gray-50/30 transition-colors">
-                        <td className="px-6 py-5 text-gray-600 whitespace-nowrap">
-                          {new Date(entry.date).toLocaleDateString(undefined, { 
+                        <td className="px-4 sm:px-6 py-4 sm:py-5 text-gray-600 whitespace-nowrap text-xs sm:text-sm">
+                          {new Date(entry.date).toLocaleDateString(undefined, {
                             day: '2-digit',
                             month: 'short',
                             year: 'numeric'
                           })}
                         </td>
-                        <td className="px-6 py-5">
+                        <td className="px-4 sm:px-6 py-4 sm:py-5">
                           <p className="font-semibold text-gray-900">{entry.description}</p>
                           {entry.notes && <p className="text-xs text-gray-500 mt-0.5">{entry.notes}</p>}
-                          {entry.recordedBy && <p className="text-[10px] text-gray-400 mt-1 italic">Recorded by {entry.recordedBy}</p>}
+                          {entry.recordedBy && <p className="text-xs text-gray-400 mt-1 italic">Recorded by {entry.recordedBy}</p>}
                         </td>
-                        <td className="px-6 py-5 text-right">
+                        <td className="px-4 sm:px-6 py-4 sm:py-5 text-right">
                           {entry.type === 'debit' ? (
-                            <span className="font-bold text-red-600 text-base">₹{entry.amount}</span>
+                            <span className="font-bold text-red-600 text-sm sm:text-base">{formatCurrency(entry.amount)}</span>
                           ) : <span className="text-gray-300">—</span>}
                         </td>
-                        <td className="px-6 py-5 text-right">
+                        <td className="px-4 sm:px-6 py-4 sm:py-5 text-right">
                           {entry.type === 'credit' ? (
-                            <span className="font-bold text-green-600 text-base">₹{entry.amount}</span>
+                            <span className="font-bold text-green-600 text-sm sm:text-base">{formatCurrency(entry.amount)}</span>
                           ) : <span className="text-gray-300">—</span>}
                         </td>
                       </tr>

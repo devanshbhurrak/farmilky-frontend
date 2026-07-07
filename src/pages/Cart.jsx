@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import CartItem from "../components/CartItem";
+import ErrorState from "../components/ErrorState";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import { formatCurrency } from "../utils/formatCurrency";
 import {
@@ -93,9 +94,11 @@ const Cart = () => {
 
   if (error) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-red-500">Failed to load cart</p>
-      </div>
+      <section className="page-shell">
+        <div className="app-shell">
+          <ErrorState title="Failed to load cart" message="We couldn't load your cart right now. Please try again." />
+        </div>
+      </section>
     );
   }
 
@@ -140,7 +143,7 @@ const Cart = () => {
   return (
     <section className="page-shell">
       <div className="app-shell">
-        <h1 className="mb-6 hidden text-2xl font-bold text-primary sm:mb-8 md:block md:text-3xl">
+        <h1 className="mb-6 text-2xl font-bold text-primary sm:mb-8 sm:text-3xl">
           Shopping Cart
         </h1>
 

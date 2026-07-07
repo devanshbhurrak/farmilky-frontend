@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { MessageSquare, Plus } from "lucide-react";
 import { useGetMyComplaintsQuery } from "../features/api/complaintApi";
+import ErrorState from "../components/ErrorState";
 import Loader from "../components/Loader";
 import Pagination from "../components/Pagination";
 import useDocumentTitle from "../hooks/useDocumentTitle";
@@ -24,7 +25,7 @@ const STATUS_LABELS = {
 
 const MyComplaints = () => {
   useDocumentTitle("My Complaints")
-  const { data, isLoading } = useGetMyComplaintsQuery();
+  const { data, isLoading, error, refetch } = useGetMyComplaintsQuery();
   const [page, setPage] = useState(1);
   const complaints = data?.complaints ?? [];
   const totalPages = Math.ceil(complaints.length / PAGE_SIZE);
@@ -38,13 +39,23 @@ const MyComplaints = () => {
     );
   }
 
+  if (error) {
+    return (
+      <section className="page-shell">
+        <div className="app-shell max-w-4xl">
+          <ErrorState title="Failed to load complaints" message="We could not fetch your complaints right now." onAction={refetch} />
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="page-shell">
       <div className="app-shell max-w-4xl">
-        <div className="mb-4 flex items-center justify-end gap-3 md:mb-6 md:justify-between">
-          <div className="hidden md:block">
-            <h1 className="text-2xl font-bold text-primary">My Complaints</h1>
-            <p className="mt-0.5 text-sm text-gray-500">Track the status of issues you've raised</p>
+        <div className="mb-4 flex items-center justify-between gap-3 md:mb-6">
+          <div>
+            <h1 className="text-xl font-bold text-primary sm:text-2xl">My Complaints</h1>
+            <p className="mt-0.5 hidden text-sm text-gray-500 sm:block">Track the status of issues you've raised</p>
           </div>
           <Link
             to="/raise-complaint"
@@ -75,7 +86,7 @@ const MyComplaints = () => {
         ) : (
           <div className="space-y-4">
             {paginatedComplaints.map((c) => (
-              <div key={c._id} className="surface-card p-5 sm:p-6">
+              <div key={c._id} className="surface-card p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 sm:p-6">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">

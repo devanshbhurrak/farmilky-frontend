@@ -75,7 +75,7 @@ const OrderSuccess = () => {
           <CircleCheck className="mx-auto h-16 w-16 text-green-500" strokeWidth={1.5} aria-hidden />
         </div>
 
-        <h1 className="mb-2 hidden text-2xl font-bold text-primary md:block">Order Placed!</h1>
+        <h1 className="mb-2 text-2xl font-bold text-primary">Order Placed!</h1>
         <p className="mb-8 text-gray-600">
           Thank you for your order. We&apos;ll start processing it right away.
         </p>

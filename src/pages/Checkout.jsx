@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { CheckCircle } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
@@ -160,10 +161,10 @@ const Checkout = () => {
       <section className="page-shell">
         <div className="app-shell">
           <div className="surface-card mx-auto flex min-h-[50vh] max-w-xl flex-col items-center justify-center px-6 py-10 text-center sm:px-10">
-            <h1 className="hidden text-2xl font-bold text-primary md:block md:text-3xl">
+            <h1 className="text-2xl font-bold text-primary sm:text-3xl">
               Login to continue
             </h1>
-            <p className="mt-3 hidden text-lg text-gray-600 md:block">
+            <p className="mt-3 text-base text-gray-600">
               Sign in to confirm your delivery details and place the order.
             </p>
             <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
@@ -263,17 +264,22 @@ const Checkout = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="mb-1 block text-gray-600">Street Address</label>
-              <input
-                type="text"
-                name="street"
-                value={address.street}
-                onChange={handleChange}
-                autoComplete="street-address"
-                className={`w-full rounded-xl border px-4 py-3 transition focus:border-secondary focus:outline-none ${
-                  errors.street ? "border-red-400 bg-red-50/40" : "border-gray-300"
-                }`}
-                placeholder="House No, Street Name"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  name="street"
+                  value={address.street}
+                  onChange={handleChange}
+                  autoComplete="street-address"
+                  className={`w-full rounded-xl border px-4 py-3 transition focus:border-secondary focus:outline-none ${
+                    errors.street ? "border-red-400 bg-red-50/40" : address.street.trim() ? "border-green-400 pr-10" : "border-gray-300"
+                  }`}
+                  placeholder="House No, Street Name"
+                />
+                {!errors.street && address.street.trim() && (
+                  <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" strokeWidth={1.75} aria-hidden />
+                )}
+              </div>
               {errors.street && (
                 <p className="mt-1 text-sm text-red-500">{errors.street}</p>
               )}
@@ -282,36 +288,46 @@ const Checkout = () => {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label className="mb-1 block text-gray-600">City</label>
-                <input
-                  type="text"
-                  name="city"
-                  value={address.city}
-                  onChange={handleChange}
-                  autoComplete="address-level2"
-                  className={`w-full rounded-xl border px-4 py-3 transition focus:border-secondary focus:outline-none ${
-                    errors.city ? "border-red-400 bg-red-50/40" : "border-gray-300"
-                  }`}
-                  placeholder="City"
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    name="city"
+                    value={address.city}
+                    onChange={handleChange}
+                    autoComplete="address-level2"
+                    className={`w-full rounded-xl border px-4 py-3 transition focus:border-secondary focus:outline-none ${
+                      errors.city ? "border-red-400 bg-red-50/40" : address.city.trim() ? "border-green-400 pr-10" : "border-gray-300"
+                    }`}
+                    placeholder="City"
+                  />
+                  {!errors.city && address.city.trim() && (
+                    <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" strokeWidth={1.75} aria-hidden />
+                  )}
+                </div>
                 {errors.city && (
                   <p className="mt-1 text-sm text-red-500">{errors.city}</p>
                 )}
               </div>
               <div>
                 <label className="mb-1 block text-gray-600">Pincode</label>
-                <input
-                  type="text"
-                  name="pincode"
-                  value={address.pincode}
-                  onChange={handleChange}
-                  autoComplete="postal-code"
-                  inputMode="numeric"
-                  maxLength={6}
-                  className={`w-full rounded-xl border px-4 py-3 transition focus:border-secondary focus:outline-none ${
-                    errors.pincode ? "border-red-400 bg-red-50/40" : "border-gray-300"
-                  }`}
-                  placeholder="123456"
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    name="pincode"
+                    value={address.pincode}
+                    onChange={handleChange}
+                    autoComplete="postal-code"
+                    inputMode="numeric"
+                    maxLength={6}
+                    className={`w-full rounded-xl border px-4 py-3 transition focus:border-secondary focus:outline-none ${
+                      errors.pincode ? "border-red-400 bg-red-50/40" : /^\d{6}$/.test(address.pincode) ? "border-green-400 pr-10" : "border-gray-300"
+                    }`}
+                    placeholder="123456"
+                  />
+                  {!errors.pincode && /^\d{6}$/.test(address.pincode) && (
+                    <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" strokeWidth={1.75} aria-hidden />
+                  )}
+                </div>
                 {errors.pincode && (
                   <p className="mt-1 text-sm text-red-500">{errors.pincode}</p>
                 )}
@@ -320,17 +336,22 @@ const Checkout = () => {
 
             <div>
               <label className="mb-1 block text-gray-600">State</label>
-              <input
-                type="text"
-                name="state"
-                value={address.state}
-                onChange={handleChange}
-                autoComplete="address-level1"
-                className={`w-full rounded-xl border px-4 py-3 transition focus:border-secondary focus:outline-none ${
-                  errors.state ? "border-red-400 bg-red-50/40" : "border-gray-300"
-                }`}
-                placeholder="State"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  name="state"
+                  value={address.state}
+                  onChange={handleChange}
+                  autoComplete="address-level1"
+                  className={`w-full rounded-xl border px-4 py-3 transition focus:border-secondary focus:outline-none ${
+                    errors.state ? "border-red-400 bg-red-50/40" : address.state.trim() ? "border-green-400 pr-10" : "border-gray-300"
+                  }`}
+                  placeholder="State"
+                />
+                {!errors.state && address.state.trim() && (
+                  <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" strokeWidth={1.75} aria-hidden />
+                )}
+              </div>
               {errors.state && (
                 <p className="mt-1 text-sm text-red-500">{errors.state}</p>
               )}

@@ -23,14 +23,14 @@ const Pagination = ({ page, totalPages, onPageChange }) => {
         onClick={() => onPageChange(page - 1)}
         disabled={page === 1}
         aria-label="Previous page"
-        className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 text-gray-500 transition hover:border-primary/30 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+        className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 text-gray-500 transition hover:border-primary/30 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
       >
         <ChevronLeft className="h-4 w-4" strokeWidth={2} aria-hidden />
       </button>
 
       {pages.map((p, idx) =>
         p === "…" ? (
-          <span key={`ellipsis-${idx}`} className="flex h-9 w-9 items-center justify-center text-sm text-gray-400">
+          <span key={`ellipsis-${idx}`} className="flex h-10 w-10 items-center justify-center text-sm text-gray-400">
             …
           </span>
         ) : (
@@ -38,7 +38,7 @@ const Pagination = ({ page, totalPages, onPageChange }) => {
             key={p}
             onClick={() => onPageChange(p)}
             aria-current={p === page ? "page" : undefined}
-            className={`flex h-9 w-9 items-center justify-center rounded-xl text-sm font-semibold transition ${
+            className={`flex h-10 w-10 items-center justify-center rounded-xl text-sm font-semibold transition ${
               p === page
                 ? "bg-primary text-white shadow-sm"
                 : "border border-gray-200 text-gray-600 hover:border-primary/30 hover:text-primary"
@@ -53,7 +53,7 @@ const Pagination = ({ page, totalPages, onPageChange }) => {
         onClick={() => onPageChange(page + 1)}
         disabled={page === totalPages}
         aria-label="Next page"
-        className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 text-gray-500 transition hover:border-primary/30 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+        className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 text-gray-500 transition hover:border-primary/30 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
       >
         <ChevronRight className="h-4 w-4" strokeWidth={2} aria-hidden />
       </button>

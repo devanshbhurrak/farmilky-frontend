@@ -197,6 +197,10 @@ const SubscriptionDetail = () => {
       toast.error("Please select both dates");
       return;
     }
+    if (vacUntil < vacFrom) {
+      toast.error("End date must be on or after the start date");
+      return;
+    }
     try {
       await scheduleVacation({ id: subscription._id, pauseFrom: vacFrom, pauseUntil: vacUntil }).unwrap();
       toast.success("Vacation scheduled");
@@ -286,7 +290,7 @@ const SubscriptionDetail = () => {
             {[
               { label: "Quantity", value: `${subscription.quantityPerDay} ${subscription.variantUnit || subscription.productId.unit}` },
               { label: "Schedule", value: subscription.deliverySchedule === "alternate" ? "Alternate Days" : subscription.deliverySchedule.charAt(0).toUpperCase() + subscription.deliverySchedule.slice(1) },
-              { label: `Rate / ${subscription.variantUnit || subscription.productId.unit}`, value: formatCurrency(subscription.pricePerUnit ?? (subscription.totalPricePerDay / subscription.quantityPerDay)) },
+              { label: `Rate / ${subscription.variantUnit || subscription.productId.unit}`, value: formatCurrency(subscription.pricePerUnit ?? (subscription.quantityPerDay > 0 ? subscription.totalPricePerDay / subscription.quantityPerDay : 0)) },
               { label: "Daily Cost", value: formatCurrency(subscription.totalPricePerDay) },
             ].map((item) => (
               <div key={item.label} className="surface-panel p-4">
@@ -386,21 +390,21 @@ const SubscriptionDetail = () => {
               <h2 className="mb-4 text-xl font-bold text-primary">Actions</h2>
               <div className="grid gap-3">
                 {subscription.status === "active" && (
-                  <button onClick={handlePause} className="rounded-xl border border-orange-100 bg-orange-50 py-3 font-semibold text-orange-600 transition hover:bg-orange-100">
+                  <button onClick={handlePause} className="min-h-12 rounded-xl border border-orange-100 bg-orange-50 py-3 font-semibold text-orange-600 transition hover:bg-orange-100">
                     Pause Delivery
                   </button>
                 )}
                 {subscription.status === "paused" && (
-                  <button onClick={handleResume} className="rounded-xl border border-green-100 bg-green-50 py-3 font-semibold text-green-600 transition hover:bg-green-100">
+                  <button onClick={handleResume} className="min-h-12 rounded-xl border border-green-100 bg-green-50 py-3 font-semibold text-green-600 transition hover:bg-green-100">
                     Resume Delivery
                   </button>
                 )}
                 {subscription.status !== "cancelled" && (
-                  <button onClick={handleCancel} className="rounded-xl border border-red-100 bg-red-50 py-3 font-semibold text-red-600 transition hover:bg-red-100">
+                  <button onClick={handleCancel} className="min-h-12 rounded-xl border border-red-100 bg-red-50 py-3 font-semibold text-red-600 transition hover:bg-red-100">
                     Cancel Subscription
                   </button>
                 )}
-                <Link to="/order" className="rounded-xl bg-secondary py-3 text-center font-semibold text-white transition hover:bg-secondary/90">
+                <Link to="/order" className="flex min-h-12 items-center justify-center rounded-xl bg-secondary font-semibold text-white transition hover:bg-secondary/90">
                   Order Extra / One-Time Items
                 </Link>
                 <p className="text-center text-xs text-gray-400">Need extra for a day? Place a one-time order.</p>
@@ -430,11 +434,11 @@ const SubscriptionDetail = () => {
                       </div>
                       {!inVacation && (
                         isSkipped ? (
-                          <button onClick={() => handleUnskip(date)} className="rounded-xl border border-green-200 bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 transition hover:bg-green-100">
+                          <button onClick={() => handleUnskip(date)} className="min-h-10 rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-xs font-semibold text-green-700 transition hover:bg-green-100">
                             Restore
                           </button>
                         ) : (
-                          <button onClick={() => handleSkip(date)} className="rounded-xl border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600">
+                          <button onClick={() => handleSkip(date)} className="min-h-10 rounded-xl border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600">
                             Skip
                           </button>
                         )
@@ -480,6 +484,8 @@ const SubscriptionDetail = () => {
               <h2 className="text-2xl font-bold text-primary">Transaction Ledger</h2>
             </div>
             {ledgerEntries.length > 0 ? (
+              <>
+              <p className="mb-2 text-right text-xs text-gray-400 sm:hidden">← Scroll to see more →</p>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                   <thead>
@@ -511,6 +517,7 @@ const SubscriptionDetail = () => {
                   </tbody>
                 </table>
               </div>
+              </>
             ) : (
               <div className="surface-panel p-6 text-center text-gray-500">No transactions recorded yet.</div>
             )}
@@ -545,9 +552,9 @@ const SubscriptionDetail = () => {
                     <div>
                       <p className="mb-2 text-sm font-medium text-gray-600">Quantity</p>
                       <div className="flex items-center gap-3">
-                        <button type="button" onClick={() => setEditQty((q) => Math.max(1, q - 1))} className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 font-bold text-primary">-</button>
+                        <button type="button" onClick={() => setEditQty((q) => Math.max(1, q - 1))} className="flex h-11 w-11 items-center justify-center rounded-lg border border-gray-200 font-bold text-primary transition hover:bg-gray-50 active:scale-95">-</button>
                         <span className="w-10 text-center font-bold text-gray-800">{editQty}</span>
-                        <button type="button" onClick={() => setEditQty((q) => q + 1)} className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary font-bold text-white">+</button>
+                        <button type="button" onClick={() => setEditQty((q) => q + 1)} className="flex h-11 w-11 items-center justify-center rounded-lg bg-secondary font-bold text-white transition hover:bg-secondary/90 active:scale-95">+</button>
                       </div>
                     </div>
                     <div>
@@ -561,10 +568,10 @@ const SubscriptionDetail = () => {
                       ))}
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={handleSaveEdit} disabled={editSaving} className="flex-1 rounded-xl bg-secondary py-2.5 font-semibold text-white transition disabled:opacity-60">
+                      <button onClick={handleSaveEdit} disabled={editSaving} className="flex min-h-12 flex-1 items-center justify-center rounded-xl bg-secondary font-semibold text-white transition disabled:opacity-60">
                         {editSaving ? "Saving..." : "Save"}
                       </button>
-                      <button onClick={() => setShowEdit(false)} className="flex-1 rounded-xl border border-gray-200 py-2.5 font-semibold text-gray-600">Cancel</button>
+                      <button onClick={() => setShowEdit(false)} className="flex min-h-12 flex-1 items-center justify-center rounded-xl border border-gray-200 font-semibold text-gray-600 transition hover:bg-gray-50">Cancel</button>
                     </div>
                   </div>
                 ) : (

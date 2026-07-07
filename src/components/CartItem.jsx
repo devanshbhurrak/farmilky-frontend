@@ -47,14 +47,14 @@ const CartItem = ({ item, onQuantityChange, onRemove, variantId }) => {
 
           <div className="mt-5 flex flex-col gap-4">
             <div className="flex flex-wrap items-center gap-4 sm:gap-5">
-              <div className="flex items-center rounded-full border border-[#E7DED2] bg-[#F7F3ED] px-2 py-1">
+              <div className="flex items-center rounded-full border border-[#E7DED2] bg-[#F7F3ED] px-1 py-0.5">
                 <button
                   onClick={() =>
                     item.quantity === 1
                       ? onRemove(product._id, item.variantId)
                       : onQuantityChange(product._id, item.quantity - 1, item.variantId)
                   }
-                  className="flex h-8 w-8 items-center justify-center rounded-full text-lg text-primary transition hover:bg-white"
+                  className="flex h-11 w-11 items-center justify-center rounded-full text-lg text-primary transition hover:bg-white active:scale-95"
                   aria-label={`Decrease quantity of ${product.name}`}
                 >
                   -
@@ -66,7 +66,7 @@ const CartItem = ({ item, onQuantityChange, onRemove, variantId }) => {
 
                 <button
                   onClick={() => onQuantityChange(product._id, item.quantity + 1, item.variantId)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full text-lg text-primary transition hover:bg-white"
+                  className="flex h-11 w-11 items-center justify-center rounded-full text-lg text-primary transition hover:bg-white active:scale-95"
                   aria-label={`Increase quantity of ${product.name}`}
                 >
                   +

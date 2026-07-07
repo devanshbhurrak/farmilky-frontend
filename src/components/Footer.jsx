@@ -12,14 +12,14 @@ const Footer = () => {
 
   const contactLinks = [
     { label: "Email", href: "mailto:farmilky.official@gmail.com", icon: Mail },
-    { label: "Phone", href: "tel:+9192442 37975", icon: Phone },
-    { label: "WhatsApp", href: "https://wa.me/9192442 37975", icon: MessageCircle },
+    { label: "Phone", href: "tel:+919244237975", icon: Phone },
+    { label: "WhatsApp", href: "https://wa.me/919244237975", icon: MessageCircle },
   ];
 
   return (
     <footer className="bg-primary text-[#F9F5F0]">
       <div className="app-shell py-14">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-4 md:gap-12">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:grid-cols-4 md:gap-12">
           <div className="space-y-4">
             <p className="font-bold text-3xl sm:text-4xl">Farmilky</p>
             <p className="max-w-xs text-sm leading-6 text-gray-300">
@@ -55,7 +55,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="tel:+9192442 37975"
+                  href="tel:+919244237975"
                   className="font-medium hover:text-secondary transition-colors"
                 >
                   +91 92442 37975

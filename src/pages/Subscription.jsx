@@ -89,8 +89,8 @@ const Subscription = () => {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="flex animate-pulse flex-col items-center">
-          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-secondary border-t-transparent" aria-hidden />
           <p className="font-medium text-gray-500">Loading product details...</p>
         </div>
       </div>
@@ -108,7 +108,7 @@ const Subscription = () => {
   return (
     <section className="page-shell transition-colors duration-300 lg:py-16">
       <div className="app-shell max-w-6xl">
-        <div className="mb-8 hidden text-center md:block">
+        <div className="mb-8 text-center">
           <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-primary md:text-4xl">
             Daily Freshness
           </h1>
@@ -222,7 +222,7 @@ const Subscription = () => {
                     value={startDate}
                     min={todayStr()}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="rounded-xl border border-gray-300 px-4 py-3 text-gray-800 transition focus:border-secondary focus:outline-none"
+                    className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-800 transition focus:border-secondary focus:outline-none sm:w-auto"
                   />
                   {startDate !== todayStr() && (
                     <p className="mt-1 text-xs text-gray-500">

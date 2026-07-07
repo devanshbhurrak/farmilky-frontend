@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { ArrowLeft, Loader2, Lock, Mail, Phone, User } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Loader2, Lock, Mail, Phone, User } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 import {
@@ -8,7 +8,7 @@ import {
   useRegisterUserMutation,
 } from "../features/api/authApi";
 
-const AuthInput = ({ icon, label, id, ...props }) => (
+const AuthInput = ({ icon, label, id, rightAddon, ...props }) => (
   <div className="space-y-1.5">
     {label && (
       <label htmlFor={id} className="block text-sm font-medium text-gray-700">
@@ -17,10 +17,23 @@ const AuthInput = ({ icon, label, id, ...props }) => (
     )}
     <div className="flex items-center gap-3 rounded-xl border border-gray-300 px-4 py-3 shadow-sm transition focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20">
       <span className="text-gray-400" aria-hidden>{icon}</span>
-      <input id={id} {...props} className="h-full w-full outline-none" />
+      <input id={id} {...props} className="h-full min-w-0 flex-1 outline-none focus-visible:outline-none" />
+      {rightAddon}
     </div>
   </div>
 );
+
+const getPasswordStrength = (password) => {
+  if (!password) return null;
+  const hasUpper = /[A-Z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasSpecial = /[^A-Za-z0-9]/.test(password);
+  const score = (hasUpper ? 1 : 0) + (hasNumber ? 1 : 0) + (hasSpecial ? 1 : 0);
+  if (password.length < 6) return { level: 1, label: "Weak", color: "bg-red-400" };
+  if (password.length < 10 && score < 2) return { level: 2, label: "Fair", color: "bg-orange-400" };
+  if (password.length >= 8 && score >= 2) return { level: 3, label: "Strong", color: "bg-green-500" };
+  return { level: 2, label: "Fair", color: "bg-orange-400" };
+};
 
 const initialForm = {
   name: "",
@@ -60,11 +73,13 @@ const AuthPage = () => {
 
   const [form, setForm] = useState(initialForm);
   const [phoneError, setPhoneError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const isSubmitting = loginLoading || registerLoading;
 
   useEffect(() => {
     setForm(initialForm);
     setPhoneError("");
+    setShowPassword(false);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -202,13 +217,43 @@ const AuthPage = () => {
             label="Password"
             icon={<Lock className="h-5 w-5" strokeWidth={1.75} />}
             name="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder={isLoginView ? "Your password" : "Create a password"}
             autoComplete={isLoginView ? "current-password" : "new-password"}
             required
             value={form.password}
             onChange={handleChange}
+            rightAddon={
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="shrink-0 text-gray-400 transition-colors hover:text-gray-600"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword
+                  ? <EyeOff className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+                  : <Eye className="h-4 w-4" strokeWidth={1.75} aria-hidden />}
+              </button>
+            }
           />
+          {!isLoginView && form.password && (() => {
+            const strength = getPasswordStrength(form.password);
+            return (
+              <div className="-mt-2 space-y-1">
+                <div className="flex gap-1">
+                  {[1, 2, 3].map((n) => (
+                    <div
+                      key={n}
+                      className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
+                        n <= strength.level ? strength.color : "bg-gray-200"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500">Password strength: <span className="font-medium">{strength.label}</span></p>
+              </div>
+            );
+          })()}
 
           <button
             type="submit"

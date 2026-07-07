@@ -182,12 +182,12 @@ const OrderDetail = () => {
 
         <div className="surface-card p-6 sm:p-8">
           <div className="flex flex-row items-start justify-between gap-5 pb-4">
-            <div className="hidden md:block">
+            <div className="min-w-0">
               <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-secondary">
                 Order Details
               </p>
-              <h1 className="text-2xl font-bold text-primary">Order #{order._id.slice(-8).toUpperCase()}</h1>
-              <p className="mt-2 text-sm text-gray-500">
+              <h1 className="text-xl font-bold text-primary sm:text-2xl">Order #{order._id.slice(-8).toUpperCase()}</h1>
+              <p className="mt-1 text-sm text-gray-500">
                 Placed on {new Date(order.createdAt).toLocaleDateString()} at{" "}
                 {new Date(order.createdAt).toLocaleTimeString()}
               </p>

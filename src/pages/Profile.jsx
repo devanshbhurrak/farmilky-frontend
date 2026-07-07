@@ -159,8 +159,8 @@ const Profile = () => {
             <ArrowLeft className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
             Back to home
           </Link>
-          <h1 className="mt-3 hidden text-2xl font-bold text-primary md:block">My Profile</h1>
-          <p className="mt-0.5 hidden text-sm text-gray-500 md:block">Manage your account details and delivery preferences</p>
+          <h1 className="mt-3 text-2xl font-bold text-primary">My Profile</h1>
+          <p className="mt-0.5 text-sm text-gray-500">Manage your account details and delivery preferences</p>
         </div>
 
         {/* Personal Info */}
@@ -193,7 +193,7 @@ const Profile = () => {
                 value={personalForm.phone}
                 onChange={handlePersonalChange}
                 maxLength={10}
-                inputMode="tel"
+                inputMode="numeric"
                 className="w-full rounded-xl border border-gray-300 px-4 py-3 transition focus:border-secondary focus:outline-none"
               />
             </div>
@@ -237,7 +237,7 @@ const Profile = () => {
 
             <div className="flex items-center justify-between sm:justify-end gap-6 border-t sm:border-t-0 border-primary/10 pt-4 sm:pt-0">
                <div className="text-right">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-primary/40 mb-1">Current Balance</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary/40 mb-1">Current Balance</p>
                   <p className={`text-2xl font-black ${ (profile?.accountBalance || 0) > 0 ? "text-red-600" : "text-green-600"}`}>
                     ₹{Math.abs(profile?.accountBalance || 0)}
                   </p>
@@ -295,7 +295,9 @@ const Profile = () => {
                 placeholder="e.g. Leave at the door, ring bell twice..."
                 className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm transition focus:border-secondary focus:outline-none"
               />
-              <p className="mt-1 text-right text-xs text-gray-400">
+              <p className={`mt-1 text-right text-xs transition-colors ${
+                prefs.defaultDeliveryNotes.length >= 180 ? "text-red-500" : prefs.defaultDeliveryNotes.length >= 140 ? "text-orange-400" : "text-gray-400"
+              }`}>
                 {prefs.defaultDeliveryNotes.length}/200
               </p>
             </div>
@@ -392,7 +394,7 @@ const Profile = () => {
                   {addrErrors.street && <p className="mt-1 text-xs text-red-500">{addrErrors.street}</p>}
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
                     <label className="mb-1 block text-sm text-gray-600">City</label>
                     <input
@@ -419,7 +421,7 @@ const Profile = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
                     <label className="mb-1 block text-sm text-gray-600">State</label>
                     <input

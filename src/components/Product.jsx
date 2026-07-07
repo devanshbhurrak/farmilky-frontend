@@ -27,6 +27,9 @@ const Product = ({ product }) => {
 
   const hasVariants = product.variants?.length > 0;
   const [selectedVariantId, setSelectedVariantId] = useState(null);
+  const [imgLoaded, setImgLoaded] = useState(false);
+
+  const isProductAvailable = product.isAvailable !== false;
 
   useEffect(() => {
     if (hasVariants) {
@@ -100,15 +103,23 @@ const Product = ({ product }) => {
   };
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl bg-gray-50 shadow-lg transition hover:shadow-2xl hover:-translate-y-1 duration-300">
-      <Link to={`/product/${product._id}`} tabIndex={-1} aria-hidden>
+    <div className={`flex flex-col overflow-hidden rounded-2xl bg-gray-50 shadow-lg transition hover:shadow-2xl hover:-translate-y-1 duration-300 ${!isProductAvailable ? "opacity-75" : ""}`}>
+      <Link to={`/product/${product._id}`} tabIndex={-1} aria-hidden className="relative block">
         <img
           src={product.image}
           alt={product.name}
           loading="lazy"
           decoding="async"
-          className="h-56 w-full bg-white object-contain p-4 sm:h-64"
+          onLoad={() => setImgLoaded(true)}
+          className={`h-56 w-full bg-gray-100 object-contain p-4 sm:h-64 transition-opacity duration-300 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
         />
+        {!isProductAvailable && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-[2px]">
+            <span className="rounded-full bg-red-100 px-4 py-1.5 text-sm font-bold uppercase tracking-wide text-red-600 shadow-sm">
+              Out of Stock
+            </span>
+          </div>
+        )}
       </Link>
 
       <div className="flex grow flex-col p-5 sm:p-6">
@@ -166,7 +177,11 @@ const Product = ({ product }) => {
         </p>
 
         <div className="mt-6">
-          {quantity === 0 ? (
+          {!isProductAvailable ? (
+            <div className="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-red-200 bg-red-50 px-6 py-3">
+              <span className="font-semibold text-red-500">Currently Unavailable</span>
+            </div>
+          ) : quantity === 0 ? (
             <button
               disabled={adding}
               onClick={handleAdd}
@@ -198,7 +213,7 @@ const Product = ({ product }) => {
           )}
         </div>
 
-        {isSubscriptionFriendly && (
+        {isSubscriptionFriendly && isProductAvailable && (
           <Link
             to={`/subscribe?productId=${product._id}&quantity=${Math.max(quantity, 1)}${selectedVariantId ? `&variantId=${selectedVariantId}` : ''}`}
             className="mt-3 flex min-h-11 items-center justify-center rounded-2xl border border-primary/15 px-5 py-2 font-semibold text-primary transition hover:bg-primary/5"

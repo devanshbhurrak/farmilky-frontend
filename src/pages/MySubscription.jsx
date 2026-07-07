@@ -39,7 +39,7 @@ const MySubscriptions = () => {
     return (
       <EmptyState
         title="No Active Subscriptions"
-        message="You haven&apos;t subscribed to any products yet. Fresh milk is just a click away."
+        message="You haven't subscribed to any products yet. Fresh milk is just a click away."
         actionLabel="Browse Products"
         actionTo="/order"
         icon={
@@ -54,13 +54,13 @@ const MySubscriptions = () => {
   return (
       <section className="page-shell">
       <div className="app-shell">
-        <div className="mb-4 flex flex-row items-center justify-end gap-3 md:mb-6 md:justify-between">
-          <div className="hidden md:block">
-            <h1 className="text-2xl font-bold text-primary">My Subscriptions</h1>
-            <p className="mt-1 text-sm text-gray-500">Manage your daily deliveries</p>
+        <div className="mb-4 flex flex-row items-center justify-between gap-3 md:mb-6">
+          <div>
+            <h1 className="text-xl font-bold text-primary sm:text-2xl">My Subscriptions</h1>
+            <p className="mt-0.5 hidden text-sm text-gray-500 sm:block">Manage your daily deliveries</p>
           </div>
-          <Link to="/order" className="font-semibold text-secondary hover:underline">
-            + Add New Subscription
+          <Link to="/order" className="shrink-0 font-semibold text-secondary hover:underline">
+            + Add New
           </Link>
         </div>
 
@@ -101,7 +101,7 @@ const MySubscriptions = () => {
                     {sub.productId.name}
                   </h2>
                   <p className="font-medium text-primary">
-                    {formatCurrency(sub.pricePerUnit ?? (sub.totalPricePerDay / sub.quantityPerDay))}
+                    {formatCurrency(sub.pricePerUnit ?? (sub.quantityPerDay > 0 ? sub.totalPricePerDay / sub.quantityPerDay : 0))}
                     <span className="text-sm text-gray-400"> / {sub.variantUnit || sub.productId.unit}</span>
                   </p>
                 </div>

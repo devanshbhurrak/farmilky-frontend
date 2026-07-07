@@ -67,15 +67,17 @@ textarea {
 }
 
 /* Global focus-visible: keyboard-only focus ring, mouse clicks stay clean */
-:focus-visible {
-  outline: 2px solid #f97a00;
-  outline-offset: 2px;
-  border-radius: 4px;
-}
+@layer base {
+  :focus-visible {
+    outline: 2px solid #f97a00;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 
-/* Suppress the default :focus outline so only :focus-visible rings show */
-:focus:not(:focus-visible) {
-  outline: none;
+  /* Suppress the default :focus outline so only :focus-visible rings show */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
 }
 
 .app-shell {
@@ -150,5 +152,30 @@ textarea {
 @media (min-width: 768px) {
   .page-hero {
     padding-block: 3rem;
+  }
+}
+
+/* Page fade-in on route change */
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+main > section,
+main > div {
+  animation: page-fade-in 0.2s ease-out both;
+}
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  main > section,
+  main > div {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

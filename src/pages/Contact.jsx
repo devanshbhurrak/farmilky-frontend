@@ -59,7 +59,7 @@ const ContactPage = () => {
                 <p className="text-gray-600">For support and inquiries:</p>
                 <a
                   href="mailto:farmilky.official@gmail.com"
-                  className="font-medium text-primary hover:text-secondary"
+                  className="font-medium text-primary hover:text-secondary break-all"
                 >
                   farmilky.official@gmail.com
                 </a>
@@ -74,7 +74,7 @@ const ContactPage = () => {
                 <h3 className="text-xl font-semibold text-primary">Call Us</h3>
                 <p className="text-gray-600">Anytime</p>
                 <a
-                  href="tel:+9192442 37975"
+                  href="tel:+919244237975"
                   className="font-medium text-primary hover:text-secondary"
                 >
                   +91 92442 37975
@@ -90,7 +90,7 @@ const ContactPage = () => {
                 <h3 className="text-xl font-semibold text-primary">WhatsApp Us</h3>
                 <p className="text-gray-600">Chat with us directly:</p>
                 <a
-                  href="https://wa.me/9192442 37975"
+                  href="https://wa.me/919244237975"
                   className="font-medium text-primary transition-colors hover:text-secondary"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -185,7 +185,9 @@ const ContactPage = () => {
                     onChange={handleChange}
                     className="mt-1 block w-full resize-none rounded-xl border border-gray-300 px-4 py-3 shadow-sm transition focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/20"
                   />
-                  <p className="mt-1 text-right text-xs text-gray-400">
+                  <p className={`mt-1 text-right text-xs transition-colors ${
+                    formData.message.length >= 1900 ? "text-red-500" : formData.message.length >= 1600 ? "text-orange-400" : "text-gray-400"
+                  }`}>
                     {formData.message.length}/2000
                   </p>
                 </div>

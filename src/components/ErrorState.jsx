@@ -26,7 +26,7 @@ const ErrorState = ({
         {onAction ? (
           <button
             onClick={onAction}
-            className="mt-6 rounded-xl bg-secondary px-6 py-3 font-semibold text-white transition hover:bg-secondary/90"
+            className="mt-6 inline-flex min-h-12 items-center rounded-xl bg-secondary px-6 py-3 font-semibold text-white transition hover:bg-secondary/90"
           >
             {actionLabel}
           </button>

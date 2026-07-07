@@ -64,8 +64,8 @@ const RaiseComplaint = () => {
         </button>
 
         <div className="surface-card p-6 sm:p-8">
-          <h1 className="mb-1 hidden text-xl font-bold text-primary md:block">Raise a Complaint</h1>
-          <p className="mb-6 hidden text-sm text-gray-500 md:block">
+          <h1 className="mb-1 text-xl font-bold text-primary">Raise a Complaint</h1>
+          <p className="mb-6 text-sm text-gray-500">
             Tell us what went wrong and we'll resolve it as soon as possible.
           </p>
 
@@ -120,7 +120,9 @@ const RaiseComplaint = () => {
                 placeholder="Describe the issue in detail..."
                 className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 text-gray-800 transition focus:border-secondary focus:outline-none"
               />
-              <p className="mt-1 text-right text-xs text-gray-400">
+              <p className={`mt-1 text-right text-xs transition-colors ${
+                form.description.length >= 1900 ? "text-red-500" : form.description.length >= 1600 ? "text-orange-400" : "text-gray-400"
+              }`}>
                 {form.description.length}/2000
               </p>
             </div>

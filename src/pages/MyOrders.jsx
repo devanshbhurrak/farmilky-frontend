@@ -42,12 +42,12 @@ const MyOrders = () => {
   return (
     <section className="page-shell">
       <div className="app-shell max-w-5xl">
-        <h1 className="mb-5 hidden px-2 text-2xl font-bold text-primary md:block">My Orders</h1>
+        <h1 className="mb-5 px-2 text-2xl font-bold text-primary">My Orders</h1>
 
         {orders.length === 0 ? (
           <EmptyState
             title="No orders yet"
-            message="It looks like you haven&apos;t placed any orders yet."
+            message="It looks like you haven't placed any orders yet."
             actionLabel="Start Shopping"
             actionTo="/order"
             icon={<PackageOpen className="mx-auto h-16 w-16 text-gray-300" strokeWidth={1.25} aria-hidden />}
@@ -58,7 +58,7 @@ const MyOrders = () => {
             {paginatedOrders.map((order) => (
               <div
                 key={order._id}
-                className="surface-card rounded-2xl p-5 transition hover:border-gray-200 sm:p-6"
+                className="surface-card rounded-2xl p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 sm:p-6"
               >
                 <div className="mb-4 flex flex-col gap-4 border-b border-gray-100 pb-4 md:flex-row md:items-center md:justify-between">
                   <div className="min-w-0">

@@ -113,14 +113,22 @@ const ProductDetail = () => {
   };
 
   const handleIncrease = async () => {
-    await updateCartItem({ productId: id, quantity: quantity + 1, variantId: selectedVariantId });
+    try {
+      await updateCartItem({ productId: id, quantity: quantity + 1, variantId: selectedVariantId }).unwrap();
+    } catch {
+      toast.error("Failed to update quantity");
+    }
   };
 
   const handleDecrease = async () => {
-    if (quantity === 1) {
-      await removeFromCart({ productId: id, variantId: selectedVariantId });
-    } else {
-      await updateCartItem({ productId: id, quantity: quantity - 1, variantId: selectedVariantId });
+    try {
+      if (quantity === 1) {
+        await removeFromCart({ productId: id, variantId: selectedVariantId }).unwrap();
+      } else {
+        await updateCartItem({ productId: id, quantity: quantity - 1, variantId: selectedVariantId }).unwrap();
+      }
+    } catch {
+      toast.error("Failed to update quantity");
     }
   };
 
