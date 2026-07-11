@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { PackageOpen } from "lucide-react";
+import { ArrowLeft, PackageOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 import EmptyState from "../components/EmptyState";
 import ErrorState from "../components/ErrorState";
@@ -10,17 +10,28 @@ import { formatCurrency } from "../utils/formatCurrency";
 import { useGetUserOrdersQuery } from "../features/api/orderApi";
 
 const PAGE_SIZE = 5;
+const STATUS_FILTERS = [
+  { value: "all", label: "All Orders" },
+  { value: "active", label: "Active" },
+  { value: "delivered", label: "Delivered" },
+  { value: "cancelled", label: "Cancelled" },
+];
 
 const MyOrders = () => {
   useDocumentTitle("My Orders")
   const { data: orderData, isLoading, error, refetch } = useGetUserOrdersQuery();
   const [page, setPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState("all");
   const orders = useMemo(
     () =>
-      [...(orderData?.order || [])].sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      ),
-    [orderData?.order]
+      [...(orderData?.order || [])]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .filter((o) =>
+          statusFilter === "all" ||
+          (statusFilter === "active" && (o.orderStatus === "placed" || o.orderStatus === "confirmed")) ||
+          o.orderStatus === statusFilter
+        ),
+    [orderData?.order, statusFilter]
   );
   const totalPages = Math.ceil(orders.length / PAGE_SIZE);
   const paginatedOrders = orders.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -42,14 +53,39 @@ const MyOrders = () => {
   return (
     <section className="page-shell">
       <div className="app-shell max-w-5xl">
+        <Link
+          to="/"
+          className="mb-3 inline-flex items-center gap-2 px-2 text-sm font-medium text-gray-500 hover:text-primary"
+        >
+          <ArrowLeft className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
+          Back to home
+        </Link>
         <h1 className="mb-5 px-2 text-2xl font-bold text-primary">My Orders</h1>
+
+        <div className="mb-6 flex flex-wrap gap-2 px-2">
+          {STATUS_FILTERS.map((s) => (
+            <button
+              key={s.value}
+              onClick={() => { setStatusFilter(s.value); setPage(1); }}
+              aria-pressed={statusFilter === s.value}
+              className={`rounded-2xl px-4 py-2 text-sm font-semibold transition ${
+                statusFilter === s.value
+                  ? "bg-secondary text-white shadow-sm"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
 
         {orders.length === 0 ? (
           <EmptyState
-            title="No orders yet"
-            message="It looks like you haven't placed any orders yet."
-            actionLabel="Start Shopping"
-            actionTo="/order"
+            title={statusFilter === "all" ? "No orders yet" : `No ${STATUS_FILTERS.find(f => f.value === statusFilter)?.label?.toLowerCase() || statusFilter} orders`}
+            message={statusFilter === "all" ? "It looks like you haven't placed any orders yet." : "No orders match this filter right now."}
+            actionLabel={statusFilter === "all" ? "Start Shopping" : "View All Orders"}
+            actionTo={statusFilter === "all" ? "/order" : undefined}
+            onAction={statusFilter !== "all" ? () => setStatusFilter("all") : undefined}
             icon={<PackageOpen className="mx-auto h-16 w-16 text-gray-300" strokeWidth={1.25} aria-hidden />}
             className="py-0"
           />

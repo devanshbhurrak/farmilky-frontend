@@ -77,7 +77,7 @@ const Product = ({ product }) => {
       }).unwrap();
       toast.success("Added to cart");
     } catch (err) {
-      toast.error(err?.data?.message || "Failed to add");
+      toast.error(err?.data?.message || "Failed to add to cart. Please try again.");
     }
   };
 
@@ -153,7 +153,7 @@ const Product = ({ product }) => {
                 type="button"
                 onClick={() => setSelectedVariantId(String(v._id))}
                 disabled={!v.isAvailable}
-                className={`rounded-full border px-2.5 py-0.5 text-xs font-medium transition
+                className={`min-h-[36px] rounded-full border px-3 py-1.5 text-xs font-medium transition
                   ${String(v._id) === selectedVariantId
                     ? 'border-secondary bg-secondary text-white'
                     : v.isAvailable

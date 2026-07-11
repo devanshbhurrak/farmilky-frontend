@@ -236,6 +236,18 @@ const AuthPage = () => {
               </button>
             }
           />
+          {isLoginView && (
+            <div className="-mt-3 text-right">
+              <a
+                href="https://wa.me/919244237975?text=Hi%2C%20I%20need%20help%20resetting%20my%20Farmilky%20password."
+                target="_blank"
+                rel="noreferrer"
+                className="text-sm font-medium text-gray-500 transition hover:text-secondary"
+              >
+                Forgot password?
+              </a>
+            </div>
+          )}
           {!isLoginView && form.password && (() => {
             const strength = getPasswordStrength(form.password);
             return (

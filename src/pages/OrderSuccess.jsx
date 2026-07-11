@@ -113,23 +113,33 @@ const OrderSuccess = () => {
           )}
         </div>
 
+        <div className="mb-6 rounded-xl border border-primary/15 bg-primary/5 p-4 text-left">
+          <p className="text-sm font-semibold text-primary">What&apos;s next?</p>
+          <p className="mt-1 text-sm text-gray-600">
+            Need milk daily? Set up a subscription for automatic doorstep delivery and never run out.
+          </p>
+          <Link to="/order" className="mt-2 inline-flex text-sm font-semibold text-secondary hover:underline">
+            Browse subscription-friendly products →
+          </Link>
+        </div>
+
         <div className="space-y-3">
+          <Link
+            to={`/my-orders/${id}`}
+            className="block w-full rounded-2xl bg-secondary py-3 font-semibold text-white transition hover:bg-secondary/90"
+          >
+            Track This Order
+          </Link>
           <button
             onClick={handleOrderAgain}
             disabled={isReordering}
-            className="block w-full rounded-xl bg-primary py-3 font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+            className="block w-full rounded-2xl bg-primary py-3 font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isReordering ? "Adding Items..." : "Order Again"}
           </button>
           <Link
-            to="/my-orders"
-            className="block w-full rounded-xl bg-secondary py-3 font-semibold text-white transition hover:bg-secondary/90"
-          >
-            View My Orders
-          </Link>
-          <Link
             to="/order"
-            className="block w-full rounded-xl border border-gray-300 py-3 font-semibold text-gray-600 transition hover:bg-gray-50"
+            className="block w-full rounded-2xl border border-gray-300 py-3 font-semibold text-gray-600 transition hover:bg-gray-50"
           >
             Continue Shopping
           </Link>

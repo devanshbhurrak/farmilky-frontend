@@ -155,7 +155,7 @@ const ProductDetail = () => {
 
   return (
     <section className="page-shell">
-      <div className="app-shell max-w-5xl space-y-6">
+      <div className="app-shell max-w-5xl space-y-6 pb-24 lg:pb-0">
         <Link
           to="/order"
           className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-primary"
@@ -311,6 +311,37 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* Sticky mobile CTA */}
+      {product.isAvailable && (
+        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] lg:hidden">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-medium text-gray-800 truncate max-w-40">{product.name}</p>
+              <p className="text-lg font-bold text-secondary">{formatCurrency(effectivePrice)}</p>
+            </div>
+            {quantity === 0 ? (
+              <button
+                onClick={handleAdd}
+                disabled={adding}
+                className="min-h-12 flex-1 rounded-2xl bg-secondary px-6 py-3 font-semibold text-white transition hover:bg-secondary/90 disabled:opacity-70"
+              >
+                <ShoppingCart className="mr-2 inline h-5 w-5" strokeWidth={1.75} aria-hidden />
+                {adding ? "Adding..." : "Add to Cart"}
+              </button>
+            ) : (
+              <div className="flex items-center gap-3">
+                <div className="flex items-center rounded-2xl border border-[#E7DED2] bg-[#F7F3ED] px-2 py-1.5">
+                  <button onClick={handleDecrease} className="flex h-9 w-9 items-center justify-center rounded-full text-lg text-primary" aria-label="Decrease quantity">-</button>
+                  <span className="w-8 text-center font-semibold text-primary">{quantity}</span>
+                  <button onClick={handleIncrease} className="flex h-9 w-9 items-center justify-center rounded-full text-lg text-primary" aria-label="Increase quantity">+</button>
+                </div>
+                <Link to="/cart" className="rounded-2xl bg-secondary px-5 py-3 font-semibold text-white">Cart</Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 };

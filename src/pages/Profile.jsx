@@ -172,8 +172,9 @@ const Profile = () => {
 
           <div className="space-y-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-600">Full Name</label>
+              <label htmlFor="profile-name" className="mb-1 block text-sm font-medium text-gray-600">Full Name</label>
               <input
+                id="profile-name"
                 type="text"
                 name="name"
                 value={personalForm.name}
@@ -183,11 +184,12 @@ const Profile = () => {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-600">
+              <label htmlFor="profile-phone" className="mb-1 block text-sm font-medium text-gray-600">
                 <Phone className="mr-1 inline h-3.5 w-3.5" strokeWidth={2} aria-hidden />
                 Phone
               </label>
               <input
+                id="profile-phone"
                 type="tel"
                 name="phone"
                 value={personalForm.phone}
@@ -199,11 +201,12 @@ const Profile = () => {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-600">
+              <label htmlFor="profile-email" className="mb-1 block text-sm font-medium text-gray-600">
                 <Mail className="mr-1 inline h-3.5 w-3.5" strokeWidth={2} aria-hidden />
                 Email
               </label>
               <input
+                id="profile-email"
                 type="email"
                 value={profile?.email || ""}
                 disabled
@@ -283,11 +286,12 @@ const Profile = () => {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-600">
+              <label htmlFor="profile-delivery-notes" className="mb-1 block text-sm font-medium text-gray-600">
                 <FileText className="mr-1 inline h-3.5 w-3.5" strokeWidth={2} aria-hidden />
                 Default Delivery Notes
               </label>
               <textarea
+                id="profile-delivery-notes"
                 value={prefs.defaultDeliveryNotes}
                 onChange={(e) => handlePrefsChange("defaultDeliveryNotes", e.target.value)}
                 maxLength={200}
@@ -382,8 +386,9 @@ const Profile = () => {
                 </h3>
 
                 <div>
-                  <label className="mb-1 block text-sm text-gray-600">Street</label>
+                  <label htmlFor="addr-street" className="mb-1 block text-sm text-gray-600">Street</label>
                   <input
+                    id="addr-street"
                     type="text"
                     name="street"
                     value={newAddr.street}
@@ -396,8 +401,9 @@ const Profile = () => {
 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-sm text-gray-600">City</label>
+                    <label htmlFor="addr-city" className="mb-1 block text-sm text-gray-600">City</label>
                     <input
+                      id="addr-city"
                       type="text"
                       name="city"
                       value={newAddr.city}
@@ -407,8 +413,9 @@ const Profile = () => {
                     {addrErrors.city && <p className="mt-1 text-xs text-red-500">{addrErrors.city}</p>}
                   </div>
                   <div>
-                    <label className="mb-1 block text-sm text-gray-600">Pincode</label>
+                    <label htmlFor="addr-pincode" className="mb-1 block text-sm text-gray-600">Pincode</label>
                     <input
+                      id="addr-pincode"
                       type="text"
                       name="pincode"
                       value={newAddr.pincode}
@@ -423,8 +430,9 @@ const Profile = () => {
 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-sm text-gray-600">State</label>
+                    <label htmlFor="addr-state" className="mb-1 block text-sm text-gray-600">State</label>
                     <input
+                      id="addr-state"
                       type="text"
                       name="state"
                       value={newAddr.state}
@@ -434,8 +442,9 @@ const Profile = () => {
                     {addrErrors.state && <p className="mt-1 text-xs text-red-500">{addrErrors.state}</p>}
                   </div>
                   <div>
-                    <label className="mb-1 block text-sm text-gray-600">Type</label>
+                    <label htmlFor="addr-type" className="mb-1 block text-sm text-gray-600">Type</label>
                     <select
+                      id="addr-type"
                       name="type"
                       value={newAddr.type}
                       onChange={handleAddrChange}

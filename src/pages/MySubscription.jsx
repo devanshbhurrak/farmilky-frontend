@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import EmptyState from "../components/EmptyState";
 import ErrorState from "../components/ErrorState";
@@ -54,6 +55,13 @@ const MySubscriptions = () => {
   return (
       <section className="page-shell">
       <div className="app-shell">
+        <Link
+          to="/"
+          className="mb-3 inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-primary"
+        >
+          <ArrowLeft className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
+          Back to home
+        </Link>
         <div className="mb-4 flex flex-row items-center justify-between gap-3 md:mb-6">
           <div>
             <h1 className="text-xl font-bold text-primary sm:text-2xl">My Subscriptions</h1>

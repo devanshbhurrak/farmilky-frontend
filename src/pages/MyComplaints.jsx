@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { MessageSquare, Plus } from "lucide-react";
+import { ArrowLeft, MessageSquare, Plus } from "lucide-react";
 import { useGetMyComplaintsQuery } from "../features/api/complaintApi";
 import ErrorState from "../components/ErrorState";
 import Loader from "../components/Loader";
@@ -52,6 +52,13 @@ const MyComplaints = () => {
   return (
     <section className="page-shell">
       <div className="app-shell max-w-4xl">
+        <Link
+          to="/"
+          className="mb-3 inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-primary"
+        >
+          <ArrowLeft className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
+          Back to home
+        </Link>
         <div className="mb-4 flex items-center justify-between gap-3 md:mb-6">
           <div>
             <h1 className="text-xl font-bold text-primary sm:text-2xl">My Complaints</h1>

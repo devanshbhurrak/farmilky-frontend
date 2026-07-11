@@ -117,7 +117,7 @@ const Cart = () => {
     try {
       await updateCartItem({ productId, quantity, variantId }).unwrap();
     } catch {
-      toast.error("Failed to update quantity");
+      toast.error("Couldn't update quantity. Please try again.");
     }
   };
 
@@ -126,7 +126,7 @@ const Cart = () => {
       await removeFromCart({ productId, variantId }).unwrap();
       toast.success("Item removed");
     } catch {
-      toast.error("Failed to remove item");
+      toast.error("Couldn't remove item. Please try again.");
     }
   };
 
@@ -136,7 +136,7 @@ const Cart = () => {
       await clearCart().unwrap();
       toast.success("Cart cleared");
     } catch {
-      toast.error("Failed to clear cart");
+      toast.error("Couldn't clear cart. Please try again.");
     }
   };
 
@@ -162,7 +162,8 @@ const Cart = () => {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-10">
+          <>
+          <div className="grid grid-cols-1 gap-8 pb-24 lg:grid-cols-3 lg:gap-10 lg:pb-0">
             <div className="space-y-5 lg:col-span-2 lg:space-y-6">
               {items.map((item) => (
                 <CartItem
@@ -175,7 +176,7 @@ const Cart = () => {
               ))}
             </div>
 
-            <aside className="surface-card h-fit p-6 lg:sticky lg:top-24 lg:p-8">
+            <aside className="hidden lg:block surface-card h-fit p-6 lg:sticky lg:top-24 lg:p-8">
               <h2 className="mb-6 text-2xl font-bold">Order Summary</h2>
 
               <div className="mb-3 flex justify-between text-gray-600">
@@ -189,20 +190,37 @@ const Cart = () => {
               </div>
 
               <button
-                className="mb-4 min-h-12 w-full rounded-xl bg-secondary py-3 font-semibold text-white transition hover:bg-secondary/90"
+                className="mb-4 min-h-12 w-full rounded-2xl bg-secondary py-3 font-semibold text-white transition hover:bg-secondary/90"
                 onClick={() => navigate("/checkout")}
               >
                 Proceed to Checkout
               </button>
 
               <button
-                className="min-h-11 w-full rounded-xl border border-red-500 py-2 text-red-500 transition hover:bg-red-50"
+                className="min-h-11 w-full rounded-2xl border border-red-500 py-2 text-red-500 transition hover:bg-red-50"
                 onClick={handleClearCart}
               >
                 Clear Cart
               </button>
             </aside>
           </div>
+
+          {/* Sticky mobile checkout bar */}
+          <div className="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] lg:hidden">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm text-gray-500">{totalQuantity} item{totalQuantity !== 1 ? "s" : ""}</p>
+                <p className="text-lg font-bold text-primary">{formatCurrency(totalAmount)}</p>
+              </div>
+              <button
+                className="min-h-12 flex-1 rounded-2xl bg-secondary py-3 font-semibold text-white transition hover:bg-secondary/90"
+                onClick={() => navigate("/checkout")}
+              >
+                Checkout
+              </button>
+            </div>
+          </div>
+          </>
         )}
       </div>
     </section>

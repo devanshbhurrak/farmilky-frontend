@@ -23,6 +23,21 @@ const Hero = () => {
           >
             Order Now
           </Link>
+
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-4 text-sm font-medium text-primary/70 md:justify-start">
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block h-2 w-2 rounded-full bg-green-500" aria-hidden />
+              100% Pure
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block h-2 w-2 rounded-full bg-green-500" aria-hidden />
+              Daily Delivery
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block h-2 w-2 rounded-full bg-green-500" aria-hidden />
+              Trusted by 500+ Families
+            </span>
+          </div>
         </div>
 
         <div className="flex items-center justify-center">

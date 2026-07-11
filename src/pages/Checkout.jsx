@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, ShoppingCart, Truck, ClipboardCheck } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
@@ -204,7 +204,7 @@ const Checkout = () => {
         <h2 className="mb-4 text-2xl font-bold">Your cart is empty</h2>
         <button
           onClick={() => navigate("/order")}
-          className="rounded-xl bg-secondary px-6 py-2 text-white"
+          className="rounded-2xl bg-secondary px-6 py-3 font-semibold text-white transition hover:bg-secondary/90"
         >
           Continue Shopping
         </button>
@@ -214,7 +214,29 @@ const Checkout = () => {
 
   return (
     <section className="page-shell">
-      <div className="app-shell grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-10">
+      <div className="app-shell max-w-6xl">
+        {/* Progress indicator */}
+        <div className="mb-8 flex items-center justify-center gap-2 sm:gap-4">
+          {[
+            { icon: ShoppingCart, label: "Cart", done: true },
+            { icon: Truck, label: "Shipping", done: false, active: true },
+            { icon: ClipboardCheck, label: "Confirmation", done: false },
+          ].map((step, i) => (
+            <div key={step.label} className="flex items-center gap-2 sm:gap-4">
+              {i > 0 && <div className={`hidden h-px w-6 sm:block sm:w-12 ${step.done || step.active ? "bg-secondary" : "bg-gray-200"}`} />}
+              <div className="flex items-center gap-1.5">
+                <div className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                  step.done ? "bg-secondary text-white" : step.active ? "border-2 border-secondary text-secondary" : "border-2 border-gray-200 text-gray-400"
+                }`}>
+                  <step.icon className="h-4 w-4" strokeWidth={2} aria-hidden />
+                </div>
+                <span className={`text-xs font-medium sm:text-sm ${step.active ? "text-secondary" : step.done ? "text-gray-700" : "text-gray-400"}`}>{step.label}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-10">
         <div className="surface-card h-fit p-6 sm:p-8">
 
           <h2 className="mb-6 text-2xl font-bold text-primary">Shipping Details</h2>
@@ -263,9 +285,10 @@ const Checkout = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="mb-1 block text-gray-600">Street Address</label>
+              <label htmlFor="checkout-street" className="mb-1 block text-gray-600">Street Address</label>
               <div className="relative">
                 <input
+                  id="checkout-street"
                   type="text"
                   name="street"
                   value={address.street}
@@ -287,9 +310,10 @@ const Checkout = () => {
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-1 block text-gray-600">City</label>
+                <label htmlFor="checkout-city" className="mb-1 block text-gray-600">City</label>
                 <div className="relative">
                   <input
+                    id="checkout-city"
                     type="text"
                     name="city"
                     value={address.city}
@@ -309,9 +333,10 @@ const Checkout = () => {
                 )}
               </div>
               <div>
-                <label className="mb-1 block text-gray-600">Pincode</label>
+                <label htmlFor="checkout-pincode" className="mb-1 block text-gray-600">Pincode</label>
                 <div className="relative">
                   <input
+                    id="checkout-pincode"
                     type="text"
                     name="pincode"
                     value={address.pincode}
@@ -335,9 +360,10 @@ const Checkout = () => {
             </div>
 
             <div>
-              <label className="mb-1 block text-gray-600">State</label>
+              <label htmlFor="checkout-state" className="mb-1 block text-gray-600">State</label>
               <div className="relative">
                 <input
+                  id="checkout-state"
                   type="text"
                   name="state"
                   value={address.state}
@@ -467,7 +493,7 @@ const Checkout = () => {
           <button
             onClick={(e) => handleSubmit(e)}
             disabled={isOrdering || !isAddressValid}
-            className="w-full rounded-xl bg-secondary py-4 text-lg font-bold text-white transition disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full rounded-2xl bg-secondary py-4 text-lg font-bold text-white transition hover:bg-secondary/90 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isOrdering ? "Processing..." : `Place Order (${formatCurrency(totalAmount)})`}
           </button>
@@ -475,6 +501,7 @@ const Checkout = () => {
             Review your address before placing the order. Cash on delivery is
             currently the available payment option.
           </p>
+        </div>
         </div>
       </div>
     </section>

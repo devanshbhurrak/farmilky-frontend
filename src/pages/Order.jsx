@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowDownUp, Check, ChevronDown, Search } from "lucide-react";
 import Product from "../components/Product";
 import ProductSkeleton from "../components/ProductSkeleton";
 import ErrorState from "../components/ErrorState";
@@ -8,13 +8,30 @@ import useDocumentTitle from "../hooks/useDocumentTitle";
 
 const filters = ["All", "Milk", "Dairy"];
 const DAIRY_CATEGORIES = ["paneer", "ghee", "curd", "butter", "cheese"];
+const SORT_OPTIONS = [
+  { value: "default", label: "Default" },
+  { value: "price-asc", label: "Price: Low → High" },
+  { value: "price-desc", label: "Price: High → Low" },
+  { value: "name-asc", label: "Name: A → Z" },
+];
 
 const OrderNowPage = () => {
   useDocumentTitle("Our Products")
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("default");
+  const [sortOpen, setSortOpen] = useState(false);
+  const sortRef = useRef(null);
   const { data, isLoading, error, refetch } = useGetAllProductsQuery();
   const products = data?.products || [];
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (sortRef.current && !sortRef.current.contains(e.target)) setSortOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const { milkCount, dairyCount, filteredProducts } = useMemo(() => {
     const searchTerm = search.trim().toLowerCase();
@@ -34,8 +51,13 @@ const OrderNowPage = () => {
         product.category.toLowerCase().includes(searchTerm);
       return matchesCategory && matchesSearch;
     });
+
+    if (sort === "price-asc") filtered.sort((a, b) => a.price - b.price);
+    else if (sort === "price-desc") filtered.sort((a, b) => b.price - a.price);
+    else if (sort === "name-asc") filtered.sort((a, b) => a.name.localeCompare(b.name));
+
     return { milkCount: milk, dairyCount: dairy, filteredProducts: filtered };
-  }, [products, filter, search]);
+  }, [products, filter, search, sort]);
 
   return (
     <>
@@ -55,8 +77,8 @@ const OrderNowPage = () => {
       <section className="bg-white py-14 md:py-24">
         <div className="app-shell">
 
-          <div className="mb-6 flex justify-center">
-            <div className="relative w-full max-w-md">
+          <div className="mx-auto mb-6 w-full max-w-md">
+            <div className="relative">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" aria-hidden />
               <input
                 type="search"
@@ -94,6 +116,52 @@ const OrderNowPage = () => {
               />
             </div>
           ) : (
+          <>
+          <div className="mb-4 flex items-center justify-between gap-3">
+            {!isLoading && filteredProducts.length > 0 ? (
+              <p className="text-sm text-gray-500" aria-live="polite">
+                Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""}
+                {search.trim() ? <> for &ldquo;<strong>{search.trim()}</strong>&rdquo;</> : null}
+              </p>
+            ) : <span />}
+            <div className="relative" ref={sortRef}>
+              <button
+                type="button"
+                onClick={() => setSortOpen((v) => !v)}
+                className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm text-gray-500 transition hover:bg-gray-100 hover:text-primary"
+                aria-haspopup="listbox"
+                aria-expanded={sortOpen}
+              >
+                <ArrowDownUp className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
+                <span className="font-medium">{SORT_OPTIONS.find(o => o.value === sort)?.label}</span>
+                <ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 ${sortOpen ? "rotate-180" : ""}`} strokeWidth={2} aria-hidden />
+              </button>
+              {sortOpen && (
+                <ul
+                  role="listbox"
+                  aria-label="Sort options"
+                  className="absolute right-0 top-full z-20 mt-1.5 min-w-[180px] overflow-hidden rounded-2xl border border-gray-100 bg-white py-1.5 shadow-lg shadow-black/8 animate-[fadeSlideDown_150ms_ease-out]"
+                >
+                  {SORT_OPTIONS.map((opt) => (
+                    <li
+                      key={opt.value}
+                      role="option"
+                      aria-selected={sort === opt.value}
+                      onClick={() => { setSort(opt.value); setSortOpen(false); }}
+                      className={`flex cursor-pointer items-center justify-between gap-3 px-4 py-2.5 text-sm transition ${
+                        sort === opt.value
+                          ? "bg-secondary/5 font-semibold text-secondary"
+                          : "text-gray-600 hover:bg-gray-50 hover:text-primary"
+                      }`}
+                    >
+                      {opt.label}
+                      {sort === opt.value && <Check className="h-4 w-4 shrink-0 text-secondary" strokeWidth={2.5} aria-hidden />}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
             {isLoading
               ? [...Array(6)].map((_, i) => <ProductSkeleton key={i} />)
@@ -101,9 +169,10 @@ const OrderNowPage = () => {
                   <Product key={product._id} product={product} />
                 ))}
           </div>
+          </>
           )}
 
-          {!isLoading && filteredProducts.length === 0 && (
+          {!isLoading && !error && filteredProducts.length === 0 && (
             <div className="surface-panel mt-10 p-8 text-center text-gray-600">
               <p className="text-lg font-semibold text-primary">No products found</p>
               <p className="mt-2">

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { ClipboardList, Home, HelpCircle, LogOut, Menu, MessageSquare, Package, Phone, ShoppingBag, User, Wallet, X } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useLogoutUserMutation } from "../features/api/authApi";
@@ -14,10 +14,10 @@ const Navbar = () => {
   const [logoutUser] = useLogoutUserMutation();
 
   const menuLinks = [
-    { text: "Home", path: "/" },
-    { text: "Why Farmilky?", path: "/why-farmilky" },
-    { text: "Contact Us", path: "/contact" },
-    { text: "Order Now", path: "/order" },
+    { text: "Home", path: "/", icon: Home },
+    { text: "Why Farmilky?", path: "/why-farmilky", icon: HelpCircle },
+    { text: "Contact Us", path: "/contact", icon: Phone },
+    { text: "Order Now", path: "/order", icon: ShoppingBag },
   ];
 
   // Close mobile menu and dropdown on route change
@@ -110,6 +110,9 @@ const Navbar = () => {
                   aria-controls="user-dropdown-menu"
                   className="flex items-center gap-2 py-2 font-semibold transition-colors hover:text-secondary"
                 >
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-sm font-bold text-white" aria-hidden>
+                    {user.name?.charAt(0)?.toUpperCase() || "U"}
+                  </span>
                   <span className="max-w-32 truncate">{user.name}</span>
                   <svg
                     className={`h-4 w-4 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
@@ -137,41 +140,26 @@ const Navbar = () => {
                   }`}
                 >
                     <div className="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white py-2 text-gray-800 shadow-xl">
-                      <Link
-                        to="/profile"
-                        role="menuitem"
-                        className="px-4 py-2 text-left transition-colors hover:bg-gray-50 hover:text-secondary"
-                      >
-                        My Profile
-                      </Link>
-                      <Link
-                        to="/my-orders"
-                        role="menuitem"
-                        className="px-4 py-2 text-left transition-colors hover:bg-gray-50 hover:text-secondary"
-                      >
-                        My Orders
-                      </Link>
-                      <Link
-                        to="/subscriptions"
-                        role="menuitem"
-                        className="px-4 py-2 text-left transition-colors hover:bg-gray-50 hover:text-secondary"
-                      >
-                        My Subscriptions
-                      </Link>
-                      <Link
-                        to="/passbook"
-                        role="menuitem"
-                        className="px-4 py-2 text-left transition-colors hover:bg-gray-50 hover:text-secondary"
-                      >
-                        My Passbook
-                      </Link>
-                      <Link
-                        to="/my-complaints"
-                        role="menuitem"
-                        className="px-4 py-2 text-left transition-colors hover:bg-gray-50 hover:text-secondary"
-                      >
-                        My Complaints
-                      </Link>
+                      {[
+                        { to: "/profile", label: "My Profile" },
+                        { to: "/my-orders", label: "My Orders" },
+                        { to: "/subscriptions", label: "My Subscriptions" },
+                        { to: "/passbook", label: "My Passbook" },
+                        { to: "/my-complaints", label: "My Complaints" },
+                      ].map((item) => (
+                        <Link
+                          key={item.to}
+                          to={item.to}
+                          role="menuitem"
+                          className={`px-4 py-2 text-left transition-colors hover:bg-gray-50 hover:text-secondary ${
+                            location.pathname === item.to || location.pathname.startsWith(item.to + "/")
+                              ? "border-l-2 border-secondary bg-secondary/5 font-semibold text-secondary"
+                              : ""
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
                       <button
                         onClick={() => logoutUser()}
                         role="menuitem"
@@ -206,20 +194,24 @@ const Navbar = () => {
         <div className="fixed inset-0 z-40 bg-primary/45 backdrop-blur-sm md:hidden" aria-modal="true" role="dialog" aria-label="Navigation menu">
           <div className="mx-4 mt-24 rounded-3xl border border-white/10 bg-primary text-[#F9F5F0] shadow-2xl">
             <ul className="flex flex-col gap-1 p-4 text-base font-semibold">
-              {menuLinks.map((link) => (
+              {menuLinks.map((link) => {
+                const Icon = link.icon;
+                return (
                 <li key={link.path}>
                   <NavLink
                     to={link.path}
                     className={({ isActive }) =>
-                      `block rounded-2xl px-4 py-3 transition-colors duration-300 ${
+                      `flex items-center gap-3 rounded-2xl px-4 py-3 transition-colors duration-300 ${
                         isActive ? "bg-white/10 text-accent" : "hover:bg-white/8"
                       }`
                     }
                   >
+                    <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
                     {link.text}
                   </NavLink>
                 </li>
-              ))}
+                );
+              })}
 
               {!user ? (
                 <li>
@@ -235,54 +227,35 @@ const Navbar = () => {
                   <li className="px-4 pt-3 text-sm text-white/70">
                     Signed in as {user.name}
                   </li>
-                  <li>
-                    <Link
-                      to="/profile"
-                      className="block rounded-2xl px-4 py-3 hover:bg-white/8 transition-colors"
-                    >
-                      My Profile
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/my-orders"
-                      className="block rounded-2xl px-4 py-3 hover:bg-white/8 transition-colors"
-                    >
-                      My Orders
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/subscriptions"
-                      className="block rounded-2xl px-4 py-3 hover:bg-white/8 transition-colors"
-                    >
-                      My Subscriptions
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/passbook"
-                      className="block rounded-2xl px-4 py-3 hover:bg-white/8 transition-colors"
-                    >
-                      My Passbook
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/my-complaints"
-                      className="block rounded-2xl px-4 py-3 hover:bg-white/8 transition-colors"
-                    >
-                      My Complaints
-                    </Link>
-                  </li>
+                  {[
+                    { to: "/profile", label: "My Profile", icon: User },
+                    { to: "/my-orders", label: "My Orders", icon: Package },
+                    { to: "/subscriptions", label: "My Subscriptions", icon: ClipboardList },
+                    { to: "/passbook", label: "My Passbook", icon: Wallet },
+                    { to: "/my-complaints", label: "My Complaints", icon: MessageSquare },
+                  ].map((item) => {
+                    const Icon = item.icon;
+                    return (
+                    <li key={item.to}>
+                      <Link
+                        to={item.to}
+                        className="flex items-center gap-3 rounded-2xl px-4 py-3 hover:bg-white/8 transition-colors"
+                      >
+                        <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
+                        {item.label}
+                      </Link>
+                    </li>
+                    );
+                  })}
                   <li>
                     <button
                       onClick={() => {
                         logoutUser();
                         setMenuOpen(false);
                       }}
-                      className="mt-2 w-full rounded-2xl bg-secondary px-4 py-3 font-semibold text-white"
+                      className="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-secondary px-4 py-3 font-semibold text-white"
                     >
+                      <LogOut className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
                       Logout
                     </button>
                   </li>
