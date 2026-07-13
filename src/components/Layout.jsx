@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { ChevronUp } from 'lucide-react'
 import Navbar from './Navbar'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import Footer from './Footer'
+
+const FOOTER_PATHS = ['/', '/why-farmilky', '/contact'];
 
 const Layout = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const { pathname } = useLocation();
+  const showFooter = FOOTER_PATHS.includes(pathname);
 
   useEffect(() => {
     const handleScroll = () => setShowScrollTop(window.scrollY > 400);
@@ -25,7 +29,7 @@ const Layout = () => {
         <main id="main-content" className="flex-1" tabIndex={-1}>
             <Outlet />
         </main>
-        <Footer />
+        {showFooter && <Footer />}
 
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}

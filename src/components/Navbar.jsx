@@ -7,11 +7,15 @@ import CartBadge from "./CartBadge";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [drawerVisible, setDrawerVisible] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const location = useLocation();
   const user = useSelector((state) => state.auth.user);
   const [logoutUser] = useLogoutUserMutation();
+
+  const openDrawer = () => { setMenuOpen(true); requestAnimationFrame(() => setDrawerVisible(true)); };
+  const closeDrawer = () => { setDrawerVisible(false); setTimeout(() => setMenuOpen(false), 280); };
 
   const menuLinks = [
     { text: "Home", path: "/", icon: Home },
@@ -22,16 +26,14 @@ const Navbar = () => {
 
   // Close mobile menu and dropdown on route change
   useEffect(() => {
-    setMenuOpen(false);
+    if (menuOpen) closeDrawer();
     setDropdownOpen(false);
   }, [location.pathname]);
 
-  // Lock body scroll when mobile menu is open
+  // Lock body scroll while drawer is mounted
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    return () => { document.body.style.overflow = ""; };
   }, [menuOpen]);
 
   // Close dropdown on Escape key or click outside
@@ -176,7 +178,7 @@ const Navbar = () => {
 
             <button
               className="md:hidden inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/10 p-2 text-current"
-              onClick={() => setMenuOpen(!menuOpen)}
+              onClick={menuOpen ? closeDrawer : openDrawer}
               aria-label="Toggle menu"
               aria-expanded={menuOpen}
             >
@@ -190,78 +192,133 @@ const Navbar = () => {
         </div>
       </nav>
 
+      {/* Mobile drawer */}
       {menuOpen && (
-        <div className="fixed inset-0 z-40 bg-primary/45 backdrop-blur-sm md:hidden" aria-modal="true" role="dialog" aria-label="Navigation menu">
-          <div className="mx-4 mt-24 rounded-3xl border border-white/10 bg-primary text-[#F9F5F0] shadow-2xl">
-            <ul className="flex flex-col gap-1 p-4 text-base font-semibold">
-              {menuLinks.map((link) => {
-                const Icon = link.icon;
-                return (
-                <li key={link.path}>
-                  <NavLink
-                    to={link.path}
-                    className={({ isActive }) =>
-                      `flex items-center gap-3 rounded-2xl px-4 py-3 transition-colors duration-300 ${
-                        isActive ? "bg-white/10 text-accent" : "hover:bg-white/8"
-                      }`
-                    }
-                  >
-                    <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-                    {link.text}
-                  </NavLink>
-                </li>
-                );
-              })}
+        <div className="fixed inset-0 z-40 md:hidden" aria-modal="true" role="dialog" aria-label="Navigation menu">
+          {/* Backdrop — fades in/out */}
+          <div
+            onClick={closeDrawer}
+            className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${drawerVisible ? "opacity-100" : "opacity-0"}`}
+          />
 
-              {!user ? (
-                <li>
+          {/* Drawer panel — slides in from right */}
+          <div className={`absolute right-0 top-0 flex h-full w-[80%] max-w-[300px] flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out ${drawerVisible ? "translate-x-0" : "translate-x-full"}`}>
+
+            {/* ── Top bar ── */}
+            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-6">
+              <span className="text-base font-bold text-primary">Menu</span>
+              <button
+                onClick={closeDrawer}
+                aria-label="Close menu"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition hover:bg-gray-200"
+              >
+                <X className="h-4 w-4" strokeWidth={2.5} aria-hidden />
+              </button>
+            </div>
+
+            {/* ── User card ── */}
+            {user && (
+              <Link to="/profile" className="flex items-center gap-3 border-b border-gray-100 px-5 py-4 transition hover:bg-gray-50">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-bold text-white">
+                  {user.name?.charAt(0)?.toUpperCase() || "U"}
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-bold text-gray-900">{user.name}</p>
+                  <p className="truncate text-xs text-gray-400">{user.email}</p>
+                </div>
+              </Link>
+            )}
+
+            {/* ── Scrollable links ── */}
+            <div className="flex flex-1 flex-col overflow-y-auto">
+
+              {/* Nav links */}
+              <div className="px-3 pb-1 pt-3">
+                <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-widest text-gray-400">Pages</p>
+                <ul>
+                  {menuLinks.map((link, i) => {
+                    const Icon = link.icon;
+                    return (
+                      <li
+                        key={link.path}
+                        style={{ transitionDelay: drawerVisible ? `${60 + i * 35}ms` : "0ms" }}
+                        className={`transition-all duration-300 ${drawerVisible ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`}
+                      >
+                        <NavLink
+                          to={link.path}
+                          className={({ isActive }) =>
+                            `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
+                              isActive ? "bg-primary/8 text-primary" : "text-gray-600 hover:bg-gray-50 hover:text-primary"
+                            }`
+                          }
+                        >
+                          <Icon className="h-4 w-4 shrink-0 text-secondary" strokeWidth={1.75} aria-hidden />
+                          {link.text}
+                        </NavLink>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+
+              {/* Account links */}
+              {user ? (
+                <div className="px-3 pb-1 pt-3">
+                  <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-widest text-gray-400">Account</p>
+                  <ul>
+                    {[
+                      { to: "/profile",       label: "My Profile",       icon: User },
+                      { to: "/my-orders",     label: "My Orders",        icon: Package },
+                      { to: "/subscriptions", label: "My Subscriptions", icon: ClipboardList },
+                      { to: "/passbook",      label: "My Passbook",      icon: Wallet },
+                      { to: "/my-complaints", label: "My Complaints",    icon: MessageSquare },
+                    ].map((item, i) => {
+                      const Icon = item.icon;
+                      const isActive = location.pathname === item.to || location.pathname.startsWith(item.to + "/");
+                      return (
+                        <li
+                          key={item.to}
+                          style={{ transitionDelay: drawerVisible ? `${200 + i * 35}ms` : "0ms" }}
+                          className={`transition-all duration-300 ${drawerVisible ? "translate-x-0 opacity-100" : "translate-x-4 opacity-0"}`}
+                        >
+                          <Link
+                            to={item.to}
+                            className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
+                              isActive ? "bg-primary/8 text-primary" : "text-gray-600 hover:bg-gray-50 hover:text-primary"
+                            }`}
+                          >
+                            <Icon className="h-4 w-4 shrink-0 text-secondary" strokeWidth={1.75} aria-hidden />
+                            {item.label}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ) : (
+                <div className="px-4 pt-4">
                   <Link
                     to="/login"
-                    className="mt-2 block rounded-2xl bg-secondary px-4 py-3 text-center font-semibold text-white"
+                    className="flex min-h-11 items-center justify-center rounded-2xl bg-secondary px-4 py-3 text-sm font-bold text-white transition hover:bg-secondary/90"
                   >
                     Login
                   </Link>
-                </li>
-              ) : (
-                <>
-                  <li className="px-4 pt-3 text-sm text-white/70">
-                    Signed in as {user.name}
-                  </li>
-                  {[
-                    { to: "/profile", label: "My Profile", icon: User },
-                    { to: "/my-orders", label: "My Orders", icon: Package },
-                    { to: "/subscriptions", label: "My Subscriptions", icon: ClipboardList },
-                    { to: "/passbook", label: "My Passbook", icon: Wallet },
-                    { to: "/my-complaints", label: "My Complaints", icon: MessageSquare },
-                  ].map((item) => {
-                    const Icon = item.icon;
-                    return (
-                    <li key={item.to}>
-                      <Link
-                        to={item.to}
-                        className="flex items-center gap-3 rounded-2xl px-4 py-3 hover:bg-white/8 transition-colors"
-                      >
-                        <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-                        {item.label}
-                      </Link>
-                    </li>
-                    );
-                  })}
-                  <li>
-                    <button
-                      onClick={() => {
-                        logoutUser();
-                        setMenuOpen(false);
-                      }}
-                      className="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-secondary px-4 py-3 font-semibold text-white"
-                    >
-                      <LogOut className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
-                      Logout
-                    </button>
-                  </li>
-                </>
+                </div>
               )}
-            </ul>
+            </div>
+
+            {/* ── Logout ── */}
+            {user && (
+              <div className="border-t border-gray-100 px-4 py-3">
+                <button
+                  onClick={() => { logoutUser(); closeDrawer(); }}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-red-500 transition hover:bg-red-50"
+                >
+                  <LogOut className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden />
+                  Sign out
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

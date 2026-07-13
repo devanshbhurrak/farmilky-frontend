@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CalendarDays, Repeat2, Package, ChevronRight, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import EmptyState from "../components/EmptyState";
 import ErrorState from "../components/ErrorState";
@@ -8,168 +8,160 @@ import useDocumentTitle from "../hooks/useDocumentTitle";
 import { formatCurrency } from "../utils/formatCurrency";
 import { useGetUserSubscriptionsQuery } from "../features/api/subscriptionApi";
 
+const STATUS_CONFIG = {
+  active:    { label: "Active",    classes: "bg-green-100 text-green-700",  bar: "bg-green-500"  },
+  paused:    { label: "Paused",    classes: "bg-amber-100 text-amber-700",  bar: "bg-amber-400"  },
+  cancelled: { label: "Cancelled", classes: "bg-red-100 text-red-600",      bar: "bg-red-400"    },
+};
+
 const MySubscriptions = () => {
-  useDocumentTitle("My Subscriptions")
+  useDocumentTitle("My Subscriptions");
   const { data, isLoading, error, refetch } = useGetUserSubscriptionsQuery();
 
   const subscriptions = useMemo(
-    () =>
-      [...(data?.subscription || [])].sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      ),
+    () => [...(data?.subscription || [])].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
     [data?.subscription]
   );
 
-  if (isLoading) {
-    return (
-      <Loader className="min-h-[60vh]" message="Loading your subscriptions..." />
-    );
-  }
+  if (isLoading) return <Loader className="min-h-[60vh]" message="Loading your subscriptions..." />;
 
-  if (error) {
-    return (
-      <ErrorState
-        title="Failed to load subscriptions"
-        message="We could not fetch your active plans right now."
-        onAction={refetch}
-      />
-    );
-  }
+  if (error) return (
+    <ErrorState
+      title="Failed to load subscriptions"
+      message="We could not fetch your active plans right now."
+      onAction={refetch}
+    />
+  );
 
   if (subscriptions.length === 0) {
     return (
       <EmptyState
+        className="min-h-screen"
         title="No Active Subscriptions"
         message="You haven't subscribed to any products yet. Fresh milk is just a click away."
         actionLabel="Browse Products"
         actionTo="/order"
-        icon={
-          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white text-2xl shadow-md">
-            Milk
-          </div>
-        }
       />
     );
   }
 
   return (
-      <section className="page-shell">
-      <div className="app-shell">
-        <Link
-          to="/"
-          className="mb-3 inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-primary"
-        >
-          <ArrowLeft className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
-          Back to home
-        </Link>
-        <div className="mb-4 flex flex-row items-center justify-between gap-3 md:mb-6">
-          <div>
-            <h1 className="text-xl font-bold text-primary sm:text-2xl">My Subscriptions</h1>
-            <p className="mt-0.5 hidden text-sm text-gray-500 sm:block">Manage your daily deliveries</p>
-          </div>
-          <Link to="/order" className="shrink-0 font-semibold text-secondary hover:underline">
-            + Add New
+    <section className="page-shell">
+      <div className="app-shell max-w-2xl space-y-6">
+
+        {/* Header */}
+        <div>
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-400 transition hover:text-primary"
+          >
+            <ArrowLeft className="h-3.5 w-3.5 shrink-0" strokeWidth={2.5} aria-hidden />
+            Back to home
           </Link>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-          {subscriptions.map((sub) => (
-            <div
-              key={sub._id}
-              className={`surface-card relative flex flex-col overflow-hidden rounded-[2rem] p-6 transition-all hover:-translate-y-1 ${
-                sub.status === "cancelled" ? "grayscale-[0.5] opacity-75" : ""
-              }`}
-            >
-              <div className="absolute right-6 top-6">
-                <span
-                  className={`rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wide ${
-                    sub.status === "active"
-                      ? "border-green-200 bg-green-100 text-green-700"
-                      : sub.status === "paused"
-                        ? "border-yellow-200 bg-yellow-100 text-yellow-700"
-                        : "border-red-100 bg-red-50 text-red-600"
-                  }`}
-                >
-                  {sub.status}
-                </span>
-              </div>
-
-              <div className="mb-6 flex items-center gap-4 pr-20">
-                <div className="surface-panel flex h-20 w-20 items-center justify-center p-2">
-                  <img
-                    src={sub.productId.image}
-                    alt={sub.productId.name}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-contain mix-blend-multiply"
-                  />
-                </div>
-                <div className="min-w-0">
-                  <h2 className="truncate text-xl font-bold text-gray-900">
-                    {sub.productId.name}
-                  </h2>
-                  <p className="font-medium text-primary">
-                    {formatCurrency(sub.pricePerUnit ?? (sub.quantityPerDay > 0 ? sub.totalPricePerDay / sub.quantityPerDay : 0))}
-                    <span className="text-sm text-gray-400"> / {sub.variantUnit || sub.productId.unit}</span>
-                  </p>
-                </div>
-              </div>
-
-              <div className="surface-panel mb-8 grid grid-cols-1 gap-3 p-4 text-sm sm:grid-cols-2">
-                <div>
-                  <span className="mb-1 block text-xs font-bold uppercase text-gray-500">
-                    Quantity
-                  </span>
-                  <span className="font-semibold text-gray-800">
-                    {sub.quantityPerDay} {sub.variantUnit || sub.productId.unit}
-                  </span>
-                </div>
-                <div>
-                  <span className="mb-1 block text-xs font-bold uppercase text-gray-500">
-                    Frequency
-                  </span>
-                  <span className="font-semibold capitalize text-gray-800">
-                    {sub.deliverySchedule === "custom"
-                      ? "Custom Days"
-                      : sub.deliverySchedule}
-                  </span>
-                </div>
-                <div className="border-t border-gray-200/50 pt-3 sm:col-span-2">
-                  <span className="mb-1 block text-xs font-bold uppercase text-gray-500">
-                    Next Delivery
-                  </span>
-                  <span className="font-semibold text-gray-800">
-                    {new Date(sub.nextDeliveryDate).toLocaleDateString(undefined, {
-                      weekday: "long",
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </span>
-                </div>
-                <div className="border-t border-gray-200/50 pt-3 sm:col-span-2">
-                  <span className="mb-1 block text-xs font-bold uppercase text-gray-500">
-                    Current Due
-                  </span>
-                  <span className="text-lg font-bold text-red-600">
-                    {formatCurrency(sub.pendingAmount || 0)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-auto">
-                <Link
-                  to={`/subscriptions/${sub._id}`}
-                  className="flex min-h-11 w-full items-center justify-center rounded-2xl border border-primary/15 bg-primary/5 px-4 py-3 text-center font-semibold text-primary transition hover:bg-primary/10"
-                >
-                  Manage Subscription
-                </Link>
-                <p className="mt-3 text-center text-sm text-gray-500">
-                  Open details to manage this subscription.
-                </p>
-              </div>
+          <div className="mt-3 flex items-center justify-between gap-3">
+            <div>
+              <h1 className="text-2xl font-bold text-primary">My Subscriptions</h1>
+              <p className="mt-0.5 text-sm text-gray-500">Manage your daily deliveries</p>
             </div>
-          ))}
+            <Link
+              to="/order"
+              className="shrink-0 rounded-2xl bg-secondary/10 px-4 py-2 text-sm font-bold text-secondary transition hover:bg-secondary/20"
+            >
+              + Add New
+            </Link>
+          </div>
         </div>
+
+        {/* Cards */}
+        <div className="space-y-4">
+          {subscriptions.map((sub) => {
+            const cfg = STATUS_CONFIG[sub.status] || STATUS_CONFIG.cancelled;
+            const pricePerUnit = sub.pricePerUnit ?? (sub.quantityPerDay > 0 ? sub.totalPricePerDay / sub.quantityPerDay : 0);
+            const nextDelivery = sub.nextDeliveryDate
+              ? new Date(sub.nextDeliveryDate).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" })
+              : "—";
+            const frequency = sub.deliverySchedule === "custom" ? "Custom Days" : sub.deliverySchedule;
+            const hasDue = (sub.pendingAmount || 0) > 0;
+
+            return (
+              <div
+                key={sub._id}
+                className={`overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm transition hover:shadow-md ${
+                  sub.status === "cancelled" ? "opacity-60" : ""
+                }`}
+              >
+                {/* Accent bar */}
+                <div className={`h-1 w-full ${cfg.bar}`} />
+
+                {/* Product row */}
+                <div className="flex items-center gap-4 px-5 pt-5 pb-4">
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#F5EFE4] p-2">
+                    <img
+                      src={sub.productId.image}
+                      alt={sub.productId.name}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h2 className="truncate font-bold text-gray-900">{sub.productId.name}</h2>
+                    <p className="text-sm text-gray-500">
+                      {formatCurrency(pricePerUnit)}
+                      <span className="text-gray-400"> / {sub.variantUnit || sub.productId.unit}</span>
+                    </p>
+                  </div>
+                  <span className={`shrink-0 rounded-2xl px-3 py-1 text-xs font-bold ${cfg.classes}`}>
+                    {cfg.label}
+                  </span>
+                </div>
+
+                {/* Stats strip */}
+                <div className="mx-5 divide-x divide-gray-100 rounded-2xl border border-gray-100 bg-gray-50/70 grid grid-cols-3">
+                  <div className="flex flex-col items-center gap-0.5 px-2 py-3 text-center">
+                    <Package className="mb-0.5 h-3.5 w-3.5 text-gray-400" strokeWidth={1.75} aria-hidden />
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Qty / Day</p>
+                    <p className="text-sm font-bold text-gray-800">
+                      {sub.quantityPerDay} <span className="text-xs font-normal text-gray-400">{sub.variantUnit || sub.productId.unit}</span>
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-center gap-0.5 px-2 py-3 text-center">
+                    <Repeat2 className="mb-0.5 h-3.5 w-3.5 text-gray-400" strokeWidth={1.75} aria-hidden />
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Frequency</p>
+                    <p className="text-sm font-bold capitalize text-gray-800">{frequency}</p>
+                  </div>
+                  <div className="flex flex-col items-center gap-0.5 px-2 py-3 text-center">
+                    <CalendarDays className="mb-0.5 h-3.5 w-3.5 text-gray-400" strokeWidth={1.75} aria-hidden />
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Next</p>
+                    <p className="text-sm font-bold text-gray-800">{nextDelivery}</p>
+                  </div>
+                </div>
+
+                {/* Due amount */}
+                {hasDue && (
+                  <div className="mx-5 mt-3 flex items-center gap-2.5 rounded-2xl bg-red-50 px-4 py-3">
+                    <AlertCircle className="h-4 w-4 shrink-0 text-red-500" strokeWidth={1.75} aria-hidden />
+                    <p className="text-sm text-red-600">
+                      Pending amount: <span className="font-bold">{formatCurrency(sub.pendingAmount)}</span>
+                    </p>
+                  </div>
+                )}
+
+                {/* Footer */}
+                <div className="px-5 py-4">
+                  <Link
+                    to={`/subscriptions/${sub._id}`}
+                    className="flex items-center justify-between rounded-2xl bg-primary/5 px-5 py-3.5 font-semibold text-primary transition hover:bg-primary/10"
+                  >
+                    <span>Manage Subscription</span>
+                    <ChevronRight className="h-4 w-4" strokeWidth={2.5} aria-hidden />
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
       </div>
     </section>
   );

@@ -224,7 +224,7 @@ const Checkout = () => {
           ].map((step, i) => (
             <div key={step.label} className="flex items-center gap-2 sm:gap-4">
               {i > 0 && <div className={`hidden h-px w-6 sm:block sm:w-12 ${step.done || step.active ? "bg-secondary" : "bg-gray-200"}`} />}
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5" aria-current={step.active ? "step" : undefined}>
                 <div className={`flex h-8 w-8 items-center justify-center rounded-full ${
                   step.done ? "bg-secondary text-white" : step.active ? "border-2 border-secondary text-secondary" : "border-2 border-gray-200 text-gray-400"
                 }`}>
@@ -493,10 +493,16 @@ const Checkout = () => {
           <button
             onClick={(e) => handleSubmit(e)}
             disabled={isOrdering || !isAddressValid}
+            aria-describedby={!isAddressValid ? "checkout-address-hint" : undefined}
             className="w-full rounded-2xl bg-secondary py-4 text-lg font-bold text-white transition hover:bg-secondary/90 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isOrdering ? "Processing..." : `Place Order (${formatCurrency(totalAmount)})`}
           </button>
+          {!isAddressValid && (
+            <p id="checkout-address-hint" className="mt-2 text-center text-xs text-red-500">
+              Fill in all address fields above to continue
+            </p>
+          )}
           <p className="mt-3 text-center text-xs text-gray-500">
             Review your address before placing the order. Cash on delivery is
             currently the available payment option.

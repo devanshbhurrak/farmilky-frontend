@@ -206,7 +206,7 @@ const Cart = () => {
           </div>
 
           {/* Sticky mobile checkout bar */}
-          <div className="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] lg:hidden">
+          <div className="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white/95 px-4 pt-3 safe-bottom shadow-[0_-4px_12px_rgba(0,0,0,0.08)] backdrop-blur-sm lg:hidden">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-sm text-gray-500">{totalQuantity} item{totalQuantity !== 1 ? "s" : ""}</p>

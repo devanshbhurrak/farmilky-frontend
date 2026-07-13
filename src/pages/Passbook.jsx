@@ -97,8 +97,8 @@ const Passbook = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
-                    {paginatedEntries.map((entry) => (
-                      <tr key={`${entry.date}-${entry.description}`} className="group hover:bg-gray-50/30 transition-colors">
+                    {paginatedEntries.map((entry, idx) => (
+                      <tr key={`${entry.date}-${entry.type}-${entry.amount}-${idx}`} className="group hover:bg-gray-50/30 transition-colors">
                         <td className="px-4 sm:px-6 py-4 sm:py-5 text-gray-600 whitespace-nowrap text-xs sm:text-sm">
                           {new Date(entry.date).toLocaleDateString(undefined, {
                             day: '2-digit',

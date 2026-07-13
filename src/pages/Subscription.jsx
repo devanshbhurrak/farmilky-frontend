@@ -166,8 +166,9 @@ const Subscription = () => {
                     <span className="w-16 text-center text-3xl font-bold text-gray-800">{quantity}</span>
                     <button
                       type="button"
-                      onClick={() => setQuantity((q) => q + 1)}
-                      className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary text-2xl font-bold text-white shadow-md shadow-secondary/30 transition-all active:scale-95 sm:h-14 sm:w-14"
+                      onClick={() => setQuantity((q) => Math.min(20, q + 1))}
+                      disabled={quantity >= 20}
+                      className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary text-2xl font-bold text-white shadow-md shadow-secondary/30 transition-all active:scale-95 disabled:opacity-50 sm:h-14 sm:w-14"
                     >
                       +
                     </button>

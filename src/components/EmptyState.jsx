@@ -21,7 +21,7 @@ const EmptyState = ({
   className = "",
 }) => {
   return (
-    <section className={`page-shell flex items-center justify-center px-4 ${className}`}>
+    <section className={`flex items-center justify-center px-4 ${className}`}>
       <div className="surface-card w-full max-w-md p-10 text-center sm:p-12">
         <div className="mb-6 flex justify-center">
           {icon ?? <EmptyIllustration />}

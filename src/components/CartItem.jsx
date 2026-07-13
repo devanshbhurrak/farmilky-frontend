@@ -7,6 +7,8 @@ const CartItem = ({ item, onQuantityChange, onRemove, variantId }) => {
   const navigate = useNavigate();
   const product = item.productId;
 
+  if (!product) return null;
+
   const variant = item.variantId && product?.variants?.length > 0
     ? product.variants.find(v => String(v._id) === String(item.variantId))
     : null;
