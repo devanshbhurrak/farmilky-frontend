@@ -653,36 +653,80 @@ const SubscriptionDetail = () => {
                   {upcomingDates.map(({ date, skipped: isSkipped, inVacation }, idx) => {
                     const isToday = date.toDateString() === new Date().toDateString();
                     const dim = isSkipped || inVacation;
+                    const deliveryCost = formatCurrency(subscription.totalPricePerDay);
                     return (
                       <div key={date.toISOString()}
-                        className={`flex items-center gap-3 rounded-2xl px-4 py-3 transition ${
-                          isToday && !dim ? "bg-secondary/5 border border-secondary/20"
-                          : dim ? "bg-gray-50 border border-gray-100"
-                          : "bg-gray-50/60 border border-transparent"
+                        className={`flex items-center gap-3.5 rounded-2xl px-4 py-3.5 transition-all ${
+                          isToday && !dim
+                            ? "bg-secondary/5 border border-secondary/25 shadow-sm"
+                            : inVacation
+                            ? "bg-amber-50/60 border border-amber-100"
+                            : isSkipped
+                            ? "bg-red-50/40 border border-red-100"
+                            : idx === 0
+                            ? "bg-primary/5 border border-primary/15"
+                            : "bg-gray-50/50 border border-gray-100"
                         }`}>
-                        <div className={`flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-xl text-center ${
-                          isToday && !dim ? "bg-secondary text-white"
-                          : dim ? "bg-gray-200 text-gray-400"
-                          : idx === 0 ? "bg-primary/10 text-primary"
+                        {/* Date chip */}
+                        <div className={`flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-xl text-center ${
+                          isToday && !dim ? "bg-secondary text-white shadow-sm"
+                          : inVacation   ? "bg-amber-100 text-amber-600"
+                          : isSkipped    ? "bg-red-100 text-red-400"
+                          : idx === 0    ? "bg-primary/10 text-primary"
                           : "bg-white border border-gray-200 text-gray-600"
                         }`}>
-                          <span className="text-[10px] font-semibold uppercase leading-none">{date.toLocaleDateString("en-IN", { weekday: "short" })}</span>
-                          <span className="text-sm font-extrabold leading-tight">{date.getDate()}</span>
+                          <span className="text-[9px] font-bold uppercase tracking-wide leading-none">
+                            {date.toLocaleDateString("en-IN", { weekday: "short" })}
+                          </span>
+                          <span className="text-base font-extrabold leading-tight">{date.getDate()}</span>
                         </div>
+
+                        {/* Info */}
                         <div className="min-w-0 flex-1">
-                          <p className={`text-sm font-semibold ${dim ? "text-gray-400 line-through" : "text-gray-800"}`}>
-                            {date.toLocaleDateString("en-IN", { month: "long", day: "numeric" })}
-                            {isToday && !dim && <span className="ml-2 text-xs font-bold text-secondary">Today</span>}
-                          </p>
-                          {inVacation && <p className="text-xs text-amber-600">On vacation</p>}
-                          {isSkipped && !inVacation && <p className="text-xs text-red-500">Skipped</p>}
-                          {!dim && <p className="text-xs text-gray-400">{subscription.quantityPerDay} {unit}</p>}
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <p className={`text-sm font-semibold leading-tight ${
+                              dim ? "text-gray-400 line-through decoration-gray-300" : "text-gray-800"
+                            }`}>
+                              {date.toLocaleDateString("en-IN", { month: "short", day: "numeric" })}
+                            </p>
+                            {isToday && !dim && (
+                              <span className="rounded-md bg-secondary px-1.5 py-0.5 text-[10px] font-bold text-white leading-none">Today</span>
+                            )}
+                            {idx === 0 && !isToday && !dim && (
+                              <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary leading-none">Next</span>
+                            )}
+                          </div>
+                          <div className="mt-0.5 flex items-center gap-1.5">
+                            {inVacation && (
+                              <span className="text-[11px] font-medium text-amber-600">On vacation</span>
+                            )}
+                            {isSkipped && !inVacation && (
+                              <span className="text-[11px] font-medium text-red-500">Skipped</span>
+                            )}
+                            {!dim && (
+                              <span className="text-[11px] text-gray-400">
+                                {subscription.quantityPerDay} {unit} · {deliveryCost}
+                              </span>
+                            )}
+                          </div>
                         </div>
+
+                        {/* Action */}
                         {!inVacation && (
                           isSkipped ? (
-                            <button onClick={() => handleUnskip(date)} className="shrink-0 rounded-xl border border-green-200 bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-700 transition hover:bg-green-100">Restore</button>
+                            <button
+                              onClick={() => handleUnskip(date)}
+                              className="shrink-0 rounded-xl border border-green-200 bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-700 transition hover:bg-green-100 active:scale-95"
+                            >
+                              Restore
+                            </button>
                           ) : (
-                            <button onClick={() => handleSkip(date)} className="shrink-0 rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-400 transition hover:border-red-200 hover:bg-red-50 hover:text-red-500">Skip</button>
+                            <button
+                              onClick={() => handleSkip(date)}
+                              className="shrink-0 rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-400 transition hover:border-red-200 hover:bg-red-50 hover:text-red-500 active:scale-95"
+                            >
+                              Skip
+                            </button>
                           )
                         )}
                       </div>
@@ -700,24 +744,32 @@ const SubscriptionDetail = () => {
                     const s = log.status;
                     const isDelivered = s === "delivered";
                     const isFailed    = s === "failed";
-                    const iconBg    = isDelivered ? "bg-green-100" : isFailed ? "bg-red-100" : "bg-gray-100";
-                    const iconColor = isDelivered ? "text-green-600" : isFailed ? "text-red-500" : "text-gray-400";
+                    const iconBg    = isDelivered ? "bg-green-100"  : isFailed ? "bg-red-100"  : "bg-gray-100";
+                    const iconColor = isDelivered ? "text-green-600": isFailed ? "text-red-500": "text-gray-400";
+                    const rowBg     = isDelivered ? "bg-green-50/30 border-green-100" : isFailed ? "bg-red-50/30 border-red-100" : "bg-gray-50/60 border-gray-100";
                     const Icon      = isDelivered ? CheckCircle2 : isFailed ? XCircle : Truck;
                     const qty = log.actualQuantity ?? log.quantityDelivered ?? log.scheduledQuantity;
+                    const logDate = new Date(log.deliveryDate || log.date);
                     return (
-                      <div key={String(log.deliveryDate || log.date)} className="flex items-center gap-3 rounded-2xl border border-gray-100 bg-gray-50/60 px-4 py-3">
-                        <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${iconBg}`}>
+                      <div key={String(log.deliveryDate || log.date)} className={`flex items-center gap-3.5 rounded-2xl border px-4 py-3.5 ${rowBg}`}>
+                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${iconBg}`}>
                           <Icon className={`h-4 w-4 ${iconColor}`} strokeWidth={1.75} aria-hidden />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-semibold text-gray-800">
-                            {new Date(log.deliveryDate || log.date).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" })}
+                          <p className="text-sm font-semibold text-gray-800 leading-tight">
+                            {logDate.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" })}
                           </p>
-                          <p className="text-xs capitalize text-gray-400">{qty} {unit} · {s}</p>
+                          <div className="mt-0.5 flex items-center gap-1.5">
+                            <span className={`text-[11px] font-medium capitalize ${iconColor}`}>{s}</span>
+                            <span className="text-[11px] text-gray-300">·</span>
+                            <span className="text-[11px] text-gray-400">{qty} {unit}</span>
+                          </div>
                         </div>
                         <div className="shrink-0 text-right">
-                          <p className="text-sm font-bold text-gray-800">{formatCurrency(log.totalAmount)}</p>
-                          <p className="text-xs text-gray-400">{formatCurrency(log.pricePerUnit)}/{unit}</p>
+                          <p className={`text-sm font-bold ${isDelivered ? "text-gray-900" : isFailed ? "text-red-400 line-through" : "text-gray-500"}`}>
+                            {formatCurrency(log.totalAmount)}
+                          </p>
+                          <p className="text-[11px] text-gray-400">{formatCurrency(log.pricePerUnit)}/{unit}</p>
                         </div>
                       </div>
                     );

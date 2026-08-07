@@ -12,6 +12,7 @@ const WhyFarmilkyPage    = lazy(() => import('./pages/WhyFarmilky'))
 const ContactPage        = lazy(() => import('./pages/Contact'))
 const OrderNowPage       = lazy(() => import('./pages/Order'))
 const AuthPage           = lazy(() => import('./pages/Login'))
+const SignupPage         = lazy(() => import('./pages/Signup'))
 const Cart               = lazy(() => import('./pages/Cart'))
 const Subscription       = lazy(() => import('./pages/Subscription'))
 const MySubscriptions    = lazy(() => import('./pages/MySubscription'))
@@ -133,7 +134,7 @@ const App = () => {
           </Route>
 
           <Route path="/login" element={<AuthPage />} />
-          <Route path="/signup" element={<AuthPage />} />
+          <Route path="/signup" element={<SignupPage />} />
         </Routes>
       </Suspense>
       <Toaster

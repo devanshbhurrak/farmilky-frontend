@@ -35,6 +35,8 @@
   --border-soft: #eadfce;
   --text-muted: #6b7280;
   --shadow-soft: 0 12px 30px rgba(56, 102, 65, 0.08);
+  --shadow-card: 0 4px 16px rgba(56, 102, 65, 0.06), 0 1px 4px rgba(0,0,0,0.04);
+  --shadow-hover: 0 16px 40px rgba(56, 102, 65, 0.12), 0 4px 12px rgba(0,0,0,0.06);
 }
 
 html {
@@ -104,9 +106,13 @@ textarea {
 
 .surface-card {
   background: var(--surface);
-  border: 1px solid rgba(234, 223, 206, 0.8);
+  border: 1px solid rgba(234, 223, 206, 0.7);
   border-radius: 1.5rem;
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow-card);
+}
+
+.surface-card:hover {
+  box-shadow: var(--shadow-hover);
 }
 
 .surface-panel {
@@ -117,10 +123,11 @@ textarea {
 
 .page-kicker {
   /* #974700 on #f9f5f0 = 5.48:1 — passes WCAG AA for normal text */
+  display: inline-block;
   color: #974700;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -129,13 +136,14 @@ textarea {
   font-size: clamp(1.75rem, 3.5vw, 3.25rem);
   font-weight: 800;
   line-height: 1.1;
+  letter-spacing: -0.01em;
 }
 
 .page-copy {
   max-width: 42rem;
-  color: #4b5563;
+  color: #6b7280;
   font-size: 1rem;
-  line-height: 1.75;
+  line-height: 1.8;
 }
 
 @media (min-width: 640px) {
@@ -169,6 +177,16 @@ textarea {
 @keyframes fadeSlideDown {
   from { opacity: 0; transform: translateY(-4px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom animations used in Hero */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out both;
 }
 
 main > section,
