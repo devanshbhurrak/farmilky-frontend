@@ -504,8 +504,9 @@ const SignupPage = () => {
   const validateStep1 = () => {
     const errs = {};
     if (!account.name.trim()) errs.name = "Name is required";
-    if (!account.email.trim()) errs.email = "Email is required";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(account.email)) errs.email = "Enter a valid email";
+    if (account.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(account.email)) {
+      errs.email = "Enter a valid email address";
+    }
     if (!account.phone) errs.phone = "Phone is required";
     else if (!/^[6-9]\d{9}$/.test(account.phone)) errs.phone = "Enter a valid 10-digit Indian mobile number";
     if (!account.password) errs.password = "Password is required";
@@ -621,7 +622,9 @@ const SignupPage = () => {
   };
 
   const buildPayload = (includeAddress) => {
-    const payload = { ...account };
+    const { name, phone, password, email } = account;
+    const payload = { name, phone, password };
+    if (email && email.trim()) payload.email = email.trim();
     if (includeAddress) {
       const hasAny = address.street || address.city || address.state || address.pincode;
       if (hasAny || address.lat != null) {
@@ -715,7 +718,7 @@ const SignupPage = () => {
               />
               <AuthInput
                 id="signup-email"
-                label="Email Address"
+                label="Email Address (optional)"
                 icon={<Mail className="h-4.5 w-4.5" strokeWidth={1.75} />}
                 name="email"
                 type="email"

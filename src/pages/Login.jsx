@@ -37,6 +37,7 @@ const getPasswordStrength = (password) => {
 
 const initialForm = {
   name: "",
+  identifier: "",
   email: "",
   password: "",
   phone: "",
@@ -123,7 +124,7 @@ const AuthPage = () => {
     e.preventDefault();
 
     if (isLoginView) {
-      loginUser({ email: form.email, password: form.password });
+      loginUser({ identifier: form.identifier.trim(), password: form.password });
       return;
     }
 
@@ -133,12 +134,9 @@ const AuthPage = () => {
       return;
     }
 
-    registerUser({
-      name: form.name,
-      phone: form.phone,
-      email: form.email,
-      password: form.password,
-    });
+    const payload = { name: form.name, phone: form.phone, password: form.password };
+    if (form.email.trim()) payload.email = form.email.trim();
+    registerUser(payload);
   };
 
   return (
@@ -199,18 +197,32 @@ const AuthPage = () => {
             </>
           )}
 
-          <AuthInput
-            id={isLoginView ? "login-email" : "signup-email"}
-            label="Email Address"
-            icon={<Mail className="h-5 w-5" strokeWidth={1.75} />}
-            name="email"
-            type="email"
-            placeholder="you@example.com"
-            autoComplete="email"
-            required
-            value={form.email}
-            onChange={handleChange}
-          />
+          {isLoginView ? (
+            <AuthInput
+              id="login-identifier"
+              label="Email or Phone Number"
+              icon={<Mail className="h-5 w-5" strokeWidth={1.75} />}
+              name="identifier"
+              type="text"
+              placeholder="you@example.com or 9876543210"
+              autoComplete="username"
+              required
+              value={form.identifier}
+              onChange={handleChange}
+            />
+          ) : (
+            <AuthInput
+              id="signup-email"
+              label="Email Address (optional)"
+              icon={<Mail className="h-5 w-5" strokeWidth={1.75} />}
+              name="email"
+              type="email"
+              placeholder="you@example.com"
+              autoComplete="email"
+              value={form.email}
+              onChange={handleChange}
+            />
+          )}
 
           <AuthInput
             id={isLoginView ? "login-password" : "signup-password"}
