@@ -9,6 +9,7 @@ import { passbookApi } from "../features/api/passbookApi";
 import { complaintApi } from "../features/api/complaintApi";
 import { returnApi } from "../features/api/returnApi";
 import { contactApi } from "../features/api/contactApi";
+import { invoiceApi } from "../features/api/invoiceApi";
 
 export const store = configureStore({
     reducer: {
@@ -22,6 +23,7 @@ export const store = configureStore({
         [complaintApi.reducerPath]: complaintApi.reducer,
         [returnApi.reducerPath]: returnApi.reducer,
         [contactApi.reducerPath]: contactApi.reducer,
+        [invoiceApi.reducerPath]: invoiceApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware()
@@ -33,5 +35,6 @@ export const store = configureStore({
             .concat(passbookApi.middleware)
             .concat(complaintApi.middleware)
             .concat(returnApi.middleware)
-            .concat(contactApi.middleware),
+            .concat(contactApi.middleware)
+            .concat(invoiceApi.middleware),
 })

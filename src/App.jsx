@@ -25,6 +25,7 @@ const Profile            = lazy(() => import('./pages/Profile'))
 const MyComplaints       = lazy(() => import('./pages/MyComplaints'))
 const RaiseComplaint     = lazy(() => import('./pages/RaiseComplaint'))
 const Passbook           = lazy(() => import('./pages/Passbook'))
+const MyInvoices         = lazy(() => import('./pages/MyInvoices'))
 const NotFound           = lazy(() => import('./pages/NotFound'))
 const ProductDetail      = lazy(() => import('./pages/ProductDetail'))
 
@@ -62,6 +63,14 @@ const App = () => {
               element={
                 <ProtectedRoute>
                   <Passbook />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-invoices"
+              element={
+                <ProtectedRoute>
+                  <MyInvoices />
                 </ProtectedRoute>
               }
             />
